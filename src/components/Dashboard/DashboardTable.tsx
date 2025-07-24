@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { data, categories, statuses } from '../../mockDashboardData.ts';
+import { Link as RouterLink } from 'react-router-dom';
 
 const TableContainer = styled.div`
   background: #fff;
@@ -131,11 +132,7 @@ const DashboardTable: React.FC = () => {
     (status === 'Any Status' || row.status === status)
   );
 
-  // Remove sorting, just use filtered
   const sorted = filtered;
-
-  // Remove handleSort function
-
   return (
     <>
       <TableContainer>
@@ -152,14 +149,22 @@ const DashboardTable: React.FC = () => {
           <Tbody>
             <tr>
                 <Th>
-                  <FilterSelect id="category" value={category} onChange={e => setCategory(e.target.value)}>
-                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  </FilterSelect>
+                  <form>
+                    <div>
+                      <FilterSelect id="category" value={category} onChange={e => setCategory(e.target.value)}>
+                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </FilterSelect>
+                    </div>
+                  </form>
                 </Th>
               <Th>
-                <FilterSelect id="status" value={status} onChange={e => setStatus(e.target.value)}>
-                  {statuses.map(st => <option key={st} value={st}>{st}</option>)}
-                </FilterSelect>
+                <form>
+                  <div>
+                    <FilterSelect id="status" value={status} onChange={e => setStatus(e.target.value)}>
+                      {statuses.map(st => <option key={st} value={st}>{st}</option>)}
+                    </FilterSelect>
+                  </div>
+                </form>
               </Th>
               <Th>Open</Th>
               <Th>Overdue</Th>
@@ -171,8 +176,12 @@ const DashboardTable: React.FC = () => {
               <Th>Last 6 Months</Th>
             </tr>
             {sorted.map((row, idx) => (
-              <Tr key={row.name} zebra={idx % 2 === 1}>
-                <Td><Link href={row.link}>{row.name}</Link></Td>
+              <Tr key={row.id} zebra={idx % 2 === 1}>
+                <Td>
+                  <RouterLink to={`/apps/${row.id}`} style={{ color: '#1976d2', textDecoration: 'none' }}>
+                    {row.name}
+                  </RouterLink>
+                </Td>
                 <Td><Status compliant={row.compliant}>{row.compliant ? 'Compliant' : 'Not compliant'}</Status></Td>
                 <Td>{row.issues[0]}</Td>
                 <Td>{row.issues[1]}</Td>

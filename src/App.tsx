@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 import DashboardTable from './components/Dashboard/DashboardTable.tsx';
+import AppView from './components/AppView/AppView.tsx';
+import { BrowserRouter as Router, Route, Routes, Navigate, useParams, Link as RouterLink } from 'react-router-dom';
 
 const AppContainer = styled.div`
   display: flex;
@@ -66,39 +68,45 @@ const PieChartLabel = styled.div`
 
 function App() {
   return (
-    <AppContainer>
-      <Sidebar>
-        <Logo>Pulseboard</Logo>
-        <PieChartContainer>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={complianceData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={15}
-                outerRadius={35}
-                label={({ percent }) => `${Math.round((percent ?? 0) * 100)}%`}
-              >
-                {complianceData.map((entry, idx) => (
-                  <Cell key={`cell-${idx}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" height={36} iconType="circle"/>
-            </PieChart>
-          </ResponsiveContainer>
-          <PieChartLabel>Overall Compliance</PieChartLabel>
-        </PieChartContainer>
-      </Sidebar>
-      <Main>
-        <Dashboard>
-          <DashboardTable />
-        </Dashboard>
-      </Main>
-    </AppContainer>
+    <Router>
+      <AppContainer>
+        <Sidebar>
+          <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Logo>Pulseboard</Logo>
+          </RouterLink>
+          <PieChartContainer>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={complianceData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={15}
+                  outerRadius={35}
+                  label={({ percent }) => `${Math.round((percent ?? 0) * 100)}%`}
+                >
+                  {complianceData.map((entry, idx) => (
+                    <Cell key={`cell-${idx}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Legend verticalAlign="bottom" height={36} iconType="circle"/>
+              </PieChart>
+            </ResponsiveContainer>
+            <PieChartLabel>Overall Compliance</PieChartLabel>
+          </PieChartContainer>
+        </Sidebar>
+        <Main>
+          <Dashboard>
+            <Routes>
+              <Route path="/" element={<DashboardTable />} />
+              <Route path="/apps/:appId" element={<AppView />} />
+            </Routes>
+          </Dashboard>
+        </Main>
+      </AppContainer>
+    </Router>
   );
 }
-
 export default App;
