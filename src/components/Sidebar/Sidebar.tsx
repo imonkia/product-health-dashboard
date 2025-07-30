@@ -126,11 +126,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       
       {activeSection === 'admin' && (
         <>
-          <ToggleContainer>
-            <ToggleButton active={activeTab === 'groups'}>Groups</ToggleButton>
-            <ToggleButton active={activeTab === 'users'}>Users</ToggleButton>
-          </ToggleContainer>
-          <SearchInput placeholder="Search Groups and Apps" />
           <div style={{ marginTop: 'auto', padding: '16px' }}>
             <div style={{ color: '#bdc3c7', fontSize: '12px' }}>IS&T</div>
           </div>

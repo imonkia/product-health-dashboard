@@ -111,6 +111,14 @@ const CheckboxContainer = styled.div`
   margin: 16px 0;
 `;
 
+const NestedCheckboxContainer = styled.div<{ disabled: boolean }>`
+  display: flex;
+  align-items: center;
+  margin: 8px 0 8px 24px;
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+`;
+
 const Checkbox = styled.input`
   margin-right: 12px;
   transform: scale(1.2);
@@ -150,17 +158,18 @@ const AccordionCaret = styled.span<{ expanded: boolean }>`
 
 const AccordionContent = styled.div<{ expanded: boolean }>`
   display: ${({ expanded }) => (expanded ? 'block' : 'none')};
-  padding: 16px 0;
-  border-top: 1px solid #e0e0e0;
+  padding: 0 16px;
 `;
 
 const LinksTable = styled.div`
-  margin-top: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0 16px 16px 16px;
 `;
 
 const LinkRow = styled.div`
   display: grid;
-  grid-template-columns: 40px 1fr 1fr 2fr;
+  grid-template-columns: 10px 40px repeat(3, 1fr);
   gap: 16px;
   align-items: center;
   padding: 12px 0;
@@ -178,7 +187,7 @@ const DeleteButton = styled.button`
   font-size: 18px;
   font-weight: bold;
   padding: 0;
-  width: 24px;
+  width: 14px;
   height: 24px;
   display: flex;
   align-items: center;
@@ -204,7 +213,7 @@ const AddLinkButton = styled.button`
 const ActionButtons = styled.div`
   display: flex;
   gap: 16px;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-top: 32px;
 `;
 
@@ -248,11 +257,11 @@ const EditApp: React.FC = () => {
   const [supportHours, setSupportHours] = useState(true);
 
   const links = [
-    { order: 1, category: 'CST', linkName: 'Test 25', linkUrl: 'https://www.apple.com' },
-    { order: 2, category: 'Database', linkName: 'Test 31', linkUrl: 'http://www.apple.com' },
-    { order: 3, category: 'Link sorting', linkName: 'Testing Link Sorting', linkUrl: 'https://apple.com' },
-    { order: 4, category: 'Splunk Dashboards - Comms', linkName: 'Content Dashboard', linkUrl: 'https://splunk-ist.corp.apple.com/en-US/app/search/' },
-    { order: 5, category: 'Splunk Dashboards - Learning', linkName: 'Asset Dashboard', linkUrl: 'apple.com' },
+    { order: 1, category: 'ServiceNow', linkName: 'Test 25', linkUrl: 'https://www.google.com' },
+    { order: 2, category: 'Database', linkName: 'Test 31', linkUrl: 'http://www.google.com' },
+    { order: 3, category: 'Link sorting', linkName: 'Testing Link Sorting', linkUrl: 'https://google.com' },
+    { order: 4, category: 'Splunk Dashboard', linkName: 'Content Dashboard', linkUrl: 'https://www.google.com/en-US/app/search/' },
+    { order: 5, category: 'Other Dashboards', linkName: 'Asset Dashboard', linkUrl: 'google.com' },
   ];
 
   return (
@@ -344,28 +353,30 @@ const EditApp: React.FC = () => {
                 />
                 <span>P0/P1C/P2H Incidents</span>
               </CheckboxContainer>
-              <CheckboxContainer>
+              <NestedCheckboxContainer disabled={!p0p1cP2hIncidents}>
                 <Checkbox
                   type="checkbox"
                   checked={includeInitialCi}
                   onChange={(e) => setIncludeInitialCi(e.target.checked)}
+                  disabled={!p0p1cP2hIncidents}
                 />
-                <span>Include "Initial"</span>
+                <span>Include "Initial CI"</span>
+              </NestedCheckboxContainer>
+              <CheckboxContainer>
+                <Checkbox
+                  type="checkbox"
+                  checked={supportHours}
+                  onChange={(e) => setSupportHours(e.target.checked)}
+                />
+                <span>Support Hours</span>
               </CheckboxContainer>
+              <NestedCheckboxContainer disabled={!supportHours}>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
+                  <Label>ABC Workgroup</Label>
+                  <Input defaultValue="ABC DEF Support" disabled={!supportHours} />
+                </div>
+              </NestedCheckboxContainer>
             </AccordionContent>
-
-            <CheckboxContainer>
-              <Checkbox
-                type="checkbox"
-                checked={supportHours}
-                onChange={(e) => setSupportHours(e.target.checked)}
-              />
-              <span>Support Hours</span>
-            </CheckboxContainer>
-            <div style={{ marginLeft: '24px', marginTop: '8px' }}>
-              <Label>ABC Workgroup</Label>
-              <Input defaultValue="ABC DEF Support" />
-            </div>
 
             <AccordionHeader expanded={linksExpanded} onClick={() => setLinksExpanded(!linksExpanded)}>
               <AccordionCaret expanded={linksExpanded}>▶</AccordionCaret>
@@ -373,8 +384,9 @@ const EditApp: React.FC = () => {
             </AccordionHeader>
             <AccordionContent expanded={linksExpanded}>
               <LinksTable>
-                <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 2fr', gap: '16px', padding: '12px 0', borderBottom: '2px solid #e0e0e0', fontWeight: '600', fontSize: '14px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '10px 40px repeat(3, 2fr)', gap: '16px', padding: '12px 0', fontWeight: '600', fontSize: '14px' }}>
                   <div></div>
+                  <div>Order</div>
                   <div>Category</div>
                   <div>Link Name</div>
                   <div>Link Url</div>
@@ -382,7 +394,7 @@ const EditApp: React.FC = () => {
                 {links.map((link, index) => (
                   <LinkRow key={index}>
                     <DeleteButton>×</DeleteButton>
-                    <Input defaultValue={link.order} style={{ width: '60px' }} />
+                    <Input defaultValue={link.order} style={{ width: '10px' }} />
                     <Input defaultValue={link.category} />
                     <Input defaultValue={link.linkName} />
                     <Input defaultValue={link.linkUrl} />
