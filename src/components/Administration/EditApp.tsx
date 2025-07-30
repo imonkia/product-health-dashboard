@@ -75,6 +75,7 @@ const Label = styled.label`
   font-weight: 500;
   color: #232e3c;
   margin-bottom: 8px;
+  margin-right: 12px;
 `;
 
 const Input = styled.input`
@@ -87,6 +88,7 @@ const Input = styled.input`
     outline: none;
     border-color: #1976d2;
   }
+  margin-bottom: 12px;
 `;
 
 const TextArea = styled.textarea`
@@ -95,7 +97,7 @@ const TextArea = styled.textarea`
   border-radius: 6px;
   font-size: 14px;
   background: #fff;
-  min-height: 80px;
+  min-height: 20px;
   resize: vertical;
   &:focus {
     outline: none;
@@ -273,7 +275,7 @@ const EditApp: React.FC = () => {
                   <Input defaultValue={appName} />
                 </FormGroup>
                 <FormGroup>
-                  <Label>CI Name</Label>
+                  <Label>Internal Name</Label>
                   <Input defaultValue={appName} />
                 </FormGroup>
                 <FormGroup>
@@ -281,25 +283,25 @@ const EditApp: React.FC = () => {
                   <Input defaultValue="Retail" />
                 </FormGroup>
                 <FormGroup>
-                  <Label>ksys</Label>
+                  <Label>pulsesys</Label>
                   <Input defaultValue="" />
                 </FormGroup>
               </div>
               <div>
                 <FormGroup>
-                  <Label>HCL App Id</Label>
+                  <Label>App Id</Label>
                   <Input defaultValue="57166" readOnly />
                 </FormGroup>
                 <FormGroup>
-                  <Label>CI Code</Label>
+                  <Label>Internal Code</Label>
                   <Input defaultValue="6f329b8ec3145200e4868d4fed5d7578" readOnly />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Radar Component</Label>
+                  <Label>Tracker Component</Label>
                   <Input defaultValue={appName} readOnly />
                 </FormGroup>
                 <FormGroup>
-                  <Label>ISDB UUID</Label>
+                  <Label>DB UUID</Label>
                   <Input defaultValue="12345678" readOnly />
                 </FormGroup>
               </div>
@@ -311,7 +313,7 @@ const EditApp: React.FC = () => {
               <Label>Custom Keywords</Label>
               <TextArea defaultValue="ima-test-keyword,ima-test-keyword-2" />
               <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
-                Incidents or radars that include custom keywords will be automatically imported to the compliance section of the issues tab.
+                Incidents or trackers that include custom keywords will be automatically imported to the compliance section of the issues tab.
               </div>
             </FormGroup>
 
@@ -348,7 +350,7 @@ const EditApp: React.FC = () => {
                   checked={includeInitialCi}
                   onChange={(e) => setIncludeInitialCi(e.target.checked)}
                 />
-                <span>Include "Initial CI"</span>
+                <span>Include "Initial"</span>
               </CheckboxContainer>
             </AccordionContent>
 
@@ -361,8 +363,8 @@ const EditApp: React.FC = () => {
               <span>Support Hours</span>
             </CheckboxContainer>
             <div style={{ marginLeft: '24px', marginTop: '8px' }}>
-              <Label>APS Workgroup</Label>
-              <Input defaultValue="APS ECM Support" />
+              <Label>ABC Workgroup</Label>
+              <Input defaultValue="ABC DEF Support" />
             </div>
 
             <AccordionHeader expanded={linksExpanded} onClick={() => setLinksExpanded(!linksExpanded)}>
