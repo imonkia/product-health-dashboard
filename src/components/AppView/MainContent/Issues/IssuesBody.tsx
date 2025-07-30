@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// Mock data for each section
+interface IssuesBodyProps {
+  appIssues?: any[];
+}
+
+// Mock data for each section (fallback)
 const mockSections = [
   {
     label: 'Compliance',
@@ -15,11 +19,11 @@ const mockSections = [
       {
         source: 'anteater',
         id: '72299672',
-        title: 'Add alpha/numeric link sorting',
+        title: 'Include due date when calculating compliance status for CST issues',
         status: 'Analyze',
         priority: 1,
         dueDate: '',
-        keywords: 'PB-AX, PB-OpEx',
+        keywords: 'K2-AX, K2-OpEx',
         fixEta: '',
         dri: 'Jack the Ripper',
       },
@@ -30,49 +34,49 @@ const mockSections = [
         status: 'Analyze',
         priority: 1,
         dueDate: '',
-        keywords: 'PB-AX, PB-OpEx',
+        keywords: 'K2-AX, K2-OpEx',
         fixEta: '',
         dri: 'Edward Scissorhands',
       },
     ],
-},
-{
+  },
+  {
     label: 'Accessibility',
     count: 1,
     rows: [
-        {
-            source: 'anteater',
-            id: '72137489',
-            title: 'Add alpha/numeric link sorting',
-            status: 'Analyze',
-            priority: 1,
-            dueDate: '',
-            keywords: 'PB-AX, PB-OpEx',
-            fixEta: '',
-            dri: 'Harry Potter',
-        },
-        {
-            source: 'anteater',
-            id: '72137489',
-            title: 'Add alpha/numeric link sorting',
-            status: 'Analyze',
-            priority: 1,
-            dueDate: '',
-            keywords: 'PB-AX, PB-OpEx',
-            fixEta: '',
-            dri: 'Hermione Granger',
-        },
-        {
-            source: 'anteater',
-            id: '72137489',
-            title: 'Add alpha/numeric link sorting',
-            status: 'Analyze',
-            priority: 1,
-            dueDate: '',
-            keywords: 'PB-AX, PB-OpEx',
-            fixEta: '',
-            dri: 'Katniss Everdeen',
-        },
+      {
+        source: 'anteater',
+        id: '72137489',
+        title: 'Add alpha/numeric link sorting',
+        status: 'Analyze',
+        priority: 1,
+        dueDate: '',
+        keywords: 'K2-AX, K2-OpEx',
+        fixEta: '',
+        dri: 'Monica A',
+      },
+      {
+        source: 'anteater',
+        id: '72137489',
+        title: 'Add alpha/numeric link sorting',
+        status: 'Analyze',
+        priority: 1,
+        dueDate: '',
+        keywords: 'K2-AX, K2-OpEx',
+        fixEta: '',
+        dri: 'Monica A',
+      },
+      {
+        source: 'anteater',
+        id: '72137489',
+        title: 'Add alpha/numeric link sorting',
+        status: 'Analyze',
+        priority: 1,
+        dueDate: '',
+        keywords: 'K2-AX, K2-OpEx',
+        fixEta: '',
+        dri: 'Monica A',
+      },
     ],
   },
 ];
@@ -161,8 +165,29 @@ const Caret = styled.span<{ expanded: boolean }>`
   transition: transform 0.2s;
 `;
 
-const IssuesBody: React.FC = () => {
-  const [expanded, setExpanded] = useState([false, false, false]);
+const IssuesBody: React.FC<IssuesBodyProps> = ({ appIssues = [] }) => {
+  const [expanded, setExpanded] = useState([false, true, false]);
+
+  // Use appIssues if provided, otherwise use mock data
+  const sections = appIssues.length > 0 ? 
+    // Transform appIssues into the expected format
+    [
+      {
+        label: 'Compliance',
+        count: appIssues.filter(issue => issue.category === 'compliance').length,
+        rows: appIssues.filter(issue => issue.category === 'compliance'),
+      },
+      {
+        label: 'Operational Excellence',
+        count: appIssues.filter(issue => issue.category === 'operational').length,
+        rows: appIssues.filter(issue => issue.category === 'operational'),
+      },
+      {
+        label: 'Accessibility',
+        count: appIssues.filter(issue => issue.category === 'accessibility').length,
+        rows: appIssues.filter(issue => issue.category === 'accessibility'),
+      },
+    ] : mockSections;
 
   const toggleSection = (idx: number) => {
     setExpanded(expanded => expanded.map((v, i) => (i === idx ? !v : v)));
@@ -170,7 +195,7 @@ const IssuesBody: React.FC = () => {
 
   return (
     <div>
-      {mockSections.map((section, idx) => (
+      {sections.map((section, idx) => (
         <SectionWrapper key={section.label}>
           <SectionHeader expanded={expanded[idx]} onClick={() => toggleSection(idx)}>
             <Caret expanded={expanded[idx]}>▶</Caret>

@@ -23,7 +23,7 @@ const AppView = () => {
   const [appVulnerabilities, setAppVulnerabilities] = useState([]);
   const [appPatching, setAppPatching] = useState([]);
   const [appDowntime, setAppDowntime] = useState<AppDowntimeItem[]>([]);
-  const [appDetails, setAppDetails] = useState([]);
+  const [appDetails, setAppDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [compliant, setCompliant] = useState('');
   const [complianceDuration, setComplianceDuration] = useState(0);
@@ -46,10 +46,10 @@ const AppView = () => {
       setUnplannedAppDowntime(mock.majorIncident || []);
       setAppDetails(mock);
       setLoading(false);
-      // Optionally set other state as needed
       return () => { _isMounted.current = false; };
     }
 
+    // Fallback to API if no mock data
     axios.get('/api/v1/app/applications')
       .then(res => {
         setCatAppFilter(res.data || []);
@@ -75,10 +75,15 @@ const AppView = () => {
     // eslint-disable-next-line
   }, [appFiltervalue]);
 
-  const filterAppName = useCallback(() => {
+  const getAppName = useCallback(() => {
+    // First try to get from mock data
+    if (appDetails && appDetails.name) {
+      return appDetails.name;
+    }
+    // Fallback to API data
     const filteredNameObject = _.find(catAppFilter, app => app.id === appFiltervalue);
-    return filteredNameObject?.name || '';
-  }, [catAppFilter, appFiltervalue]);
+    return filteredNameObject?.name || 'App';
+  }, [appDetails, catAppFilter, appFiltervalue]);
 
   let content;
   if (loading) {
@@ -87,14 +92,19 @@ const AppView = () => {
     content = (
       <>
         <Header
-          appName={catAppFilter.length ? filterAppName() : 'App'}
+          appName={getAppName()}
           isCompliant={!!compliant && compliant !== 'false'}
           nonComplianceInfo={!compliant || compliant === 'false' ? 'This app is not compliant. Please review the issues.' : undefined}
           nonCompliantDays={!compliant || compliant === 'false' ? complianceDuration : undefined}
         />
         <div className="container-fluid">
           <div className="row flex-xl-nowrap">
-            <MainContent />
+            <MainContent 
+              appIssues={appIssues}
+              appVulnerabilities={appVulnerabilities}
+              appPatching={appPatching}
+              appDowntime={appDowntime}
+            />
           </div>
         </div>
       </>

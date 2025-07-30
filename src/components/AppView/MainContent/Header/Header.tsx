@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   appName: string;
@@ -37,13 +38,16 @@ const AppName = styled.span`
   letter-spacing: 0.5px;
 `;
 
-const EditLink = styled.span`
+const EditLink = styled(Link)`
   font-size: 16px;
   color: rgba(255,255,255,0.85);
   margin-left: 8px;
   cursor: pointer;
   text-decoration: underline;
   font-weight: 400;
+  &:hover {
+    color: rgba(255,255,255,1);
+  }
 `;
 
 const StatusArea = styled.div`
@@ -103,7 +107,7 @@ const Header: React.FC<HeaderProps> = ({
     <HeaderBar isCompliant={isCompliant}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <AppName>{appName}</AppName>
-        <EditLink onClick={onEditClick}>edit</EditLink>
+        <EditLink to={`/admin?appName=${encodeURIComponent(appName)}`}>edit</EditLink>
       </div>
       <StatusArea>
         {!isCompliant && (

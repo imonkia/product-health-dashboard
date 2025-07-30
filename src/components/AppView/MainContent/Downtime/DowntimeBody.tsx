@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// Example mock data for downtime events
+interface DowntimeBodyProps {
+  appDowntime?: any[];
+}
+
+// Example mock data for downtime events (fallback)
 const downtimeData = [
   {
     type: 'planned',
@@ -164,12 +168,15 @@ function groupByMonth(data) {
   return byMonth;
 }
 
-const DowntimeBody: React.FC = () => {
+const DowntimeBody: React.FC<DowntimeBodyProps> = ({ appDowntime = [] }) => {
   const [sectionExpanded, setSectionExpanded] = useState([false, false]);
   const [monthExpanded, setMonthExpanded] = useState({});
 
-  const planned = downtimeData.filter(d => d.type === 'planned');
-  const unplanned = downtimeData.filter(d => d.type === 'unplanned');
+  // Use appDowntime if provided, otherwise use mock data
+  const data = appDowntime.length > 0 ? appDowntime : downtimeData;
+
+  const planned = data.filter(d => d.type === 'planned');
+  const unplanned = data.filter(d => d.type === 'unplanned');
 
   const plannedByMonth = groupByMonth(planned);
   const unplannedByMonth = groupByMonth(unplanned);

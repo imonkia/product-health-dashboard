@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// Example mock data for patching events
+interface PatchingBodyProps {
+  appPatching?: any[];
+}
+
+// Example mock data for patching events (fallback)
 const patchingData = [
   {
     environment: 'Test',
-    id: 'PATCH-001',
+    id: '-001',
     hostname: 'some-hostname.subdomain.domain.com',
     ip: '192.168.1.1',
     status: 'Compliant'
@@ -62,7 +66,10 @@ const Link = styled.a`
   &:hover { text-decoration: underline; }
 `;
 
-const PatchingBody: React.FC = () => {
+const PatchingBody: React.FC<PatchingBodyProps> = ({ appPatching = [] }) => {
+  // Use appPatching if provided, otherwise use mock data
+  const data = appPatching.length > 0 ? appPatching : patchingData;
+
   return (
     <TableWrapper>
       <Table>
@@ -76,7 +83,7 @@ const PatchingBody: React.FC = () => {
           </tr>
         </Thead>
         <Tbody>
-          {patchingData.map((row, idx) => (
+          {data.map((row, idx) => (
             <tr key={row.id + idx}>
               <Td>{row.environment}</Td>
               <Td>

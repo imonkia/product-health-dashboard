@@ -5,6 +5,13 @@ import IssuesBody from './Issues/IssuesBody.tsx';
 import VulnerabilitiesBody from './Vulnerabilities/VulnerabilitiesBody.tsx';
 import PatchingBody from './Patching/PatchingBody.tsx';
 
+interface MainBodyProps {
+  appIssues?: any[];
+  appVulnerabilities?: any[];
+  appPatching?: any[];
+  appDowntime?: any[];
+}
+
 const TABS = [
   { label: 'Issues', component: IssuesBody },
   { label: 'Vulnerabilities', component: VulnerabilitiesBody },
@@ -46,7 +53,12 @@ const TabContent = styled.div`
   padding: 2rem;
 `;
 
-const MainBody: React.FC = () => {
+const MainBody: React.FC<MainBodyProps> = ({ 
+  appIssues = [], 
+  appVulnerabilities = [], 
+  appPatching = [], 
+  appDowntime = [] 
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const ActiveComponent = TABS[activeTab].component;
 
@@ -64,7 +76,12 @@ const MainBody: React.FC = () => {
         ))}
       </TabsRow>
       <TabContent>
-        <ActiveComponent />
+        <ActiveComponent 
+          appIssues={appIssues}
+          appVulnerabilities={appVulnerabilities}
+          appPatching={appPatching}
+          appDowntime={appDowntime}
+        />
       </TabContent>
     </Container>
   );

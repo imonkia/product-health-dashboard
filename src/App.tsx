@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 import DashboardTable from './components/Dashboard/DashboardTable.tsx';
 import AppView from './components/AppView/AppView.tsx';
-import { BrowserRouter as Router, Route, Routes, Navigate, useParams, Link as RouterLink } from 'react-router-dom';
+import EditApp from './components/Administration/EditApp.tsx';
+import Sidebar from './components/Sidebar/Sidebar.tsx';
+import { BrowserRouter as Router, Route, Routes, Navigate, useParams, Link as RouterLink, useLocation } from 'react-router-dom';
 
 const AppContainer = styled.div`
   display: flex;
@@ -11,27 +13,11 @@ const AppContainer = styled.div`
   background: #f4f6fa;
 `;
 
-const Sidebar = styled.div`
-  width: 260px;
-  background: #232e3c;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px 0;
-`;
-
-const Logo = styled.div`
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 32px;
-  letter-spacing: 2px;
-`;
-
 const Main = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-left: 260px;
 `;
 
 const Dashboard = styled.div`
@@ -66,47 +52,45 @@ const PieChartLabel = styled.div`
   font-weight: 500;
 `;
 
+function AppContent() {
+  const location = useLocation();
+  const showPieChart = location.pathname === '/';
+  
+  // Determine active section based on current route
+  let activeSection: 'dashboard' | 'admin' = 'dashboard';
+  if (location.pathname === '/admin') {
+    activeSection = 'admin';
+  }
+
+  return (
+    <AppContainer>
+      <Sidebar showPieChart={showPieChart} activeSection={activeSection} />
+      <Main>
+        <Dashboard>
+          <Routes>
+            <Route path="/" element={<DashboardTable />} />
+            <Route path="/apps/:appId" element={<RedirectToTabIndex0 />} />
+            <Route path="/apps/:appId/:tabIndex" element={<AppView />} />
+            <Route path="/admin" element={<EditApp />} />
+          </Routes>
+        </Dashboard>
+      </Main>
+    </AppContainer>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <AppContainer>
-        <Sidebar>
-          <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Logo>Pulseboard</Logo>
-          </RouterLink>
-          <PieChartContainer>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={complianceData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={15}
-                  outerRadius={35}
-                  label={({ percent }) => `${Math.round((percent ?? 0) * 100)}%`}
-                >
-                  {complianceData.map((entry, idx) => (
-                    <Cell key={`cell-${idx}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Legend verticalAlign="bottom" height={36} iconType="circle"/>
-              </PieChart>
-            </ResponsiveContainer>
-            <PieChartLabel>Overall Compliance</PieChartLabel>
-          </PieChartContainer>
-        </Sidebar>
-        <Main>
-          <Dashboard>
-            <Routes>
-              <Route path="/" element={<DashboardTable />} />
-              <Route path="/apps/:appId" element={<AppView />} />
-            </Routes>
-          </Dashboard>
-        </Main>
-      </AppContainer>
+      <AppContent />
     </Router>
   );
 }
+
+// Helper component for redirecting /apps/:appId to /apps/:appId/0
+function RedirectToTabIndex0() {
+  const { appId } = useParams();
+  return <Navigate to={`/apps/${appId}/0`} replace />;
+}
+
 export default App;

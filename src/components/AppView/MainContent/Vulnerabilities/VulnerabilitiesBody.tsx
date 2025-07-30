@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// Example mock data for vulnerabilities events
+interface VulnerabilitiesBodyProps {
+  appVulnerabilities?: any[];
+}
+
+// Example mock data for vulnerabilities events (fallback)
 const vulnerabilitiesData = [
   {
     risk: 'vuln',
@@ -64,7 +68,10 @@ const Link = styled.a`
   &:hover { text-decoration: underline; }
 `;
 
-const VulnerabilitiesBody: React.FC = () => {
+const VulnerabilitiesBody: React.FC<VulnerabilitiesBodyProps> = ({ appVulnerabilities = [] }) => {
+  // Use appVulnerabilities if provided, otherwise use mock data
+  const data = appVulnerabilities.length > 0 ? appVulnerabilities : vulnerabilitiesData;
+
   return (
     <TableWrapper>
       <Table>
@@ -78,7 +85,7 @@ const VulnerabilitiesBody: React.FC = () => {
           </tr>
         </Thead>
         <Tbody>
-          {vulnerabilitiesData.map((row, idx) => (
+          {data.map((row, idx) => (
             <tr key={row.id + idx}>
               <Td>{row.risk}</Td>
               <Td>{row.vulnerability}</Td>

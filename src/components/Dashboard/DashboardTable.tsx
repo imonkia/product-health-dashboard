@@ -38,7 +38,7 @@ const Table = styled.table`
 `;
 
 const Thead = styled.thead`
-  background: #3b5998;
+  background: #213448;
   color: #fff;
   th {
     border-right: 1px solid #fff;
@@ -86,15 +86,21 @@ const Tr = styled.tr<{zebra?: boolean}>`
   }
 `;
 
-const Link = styled.a`
-  color: #1976d2;
-  text-decoration: none;
-  &:hover { text-decoration: underline; }
-`;
-
 const Status = styled.span<{compliant: boolean}>`
   font-weight: ${({ compliant }) => compliant ? 400 : 700};
   color: ${({ compliant }) => compliant ? '#3ec46d' : '#e53935'};
+`;
+
+const StyledRouterLink = styled(RouterLink)`
+  color: #1976d2;
+  text-decoration: none;
+  &:hover { 
+    color:rgb(152, 196, 239);
+    text-decoration: none;
+  }
+  &:visited {
+    color: #1976d2;
+  }
 `;
 
 const DashboardTable: React.FC = () => {
@@ -178,9 +184,9 @@ const DashboardTable: React.FC = () => {
             {sorted.map((row, idx) => (
               <Tr key={row.id} zebra={idx % 2 === 1}>
                 <Td>
-                  <RouterLink to={`/apps/${row.id}`} style={{ color: '#1976d2', textDecoration: 'none' }}>
+                  <StyledRouterLink to={`/apps/${row.id}`}>
                     {row.name}
-                  </RouterLink>
+                  </StyledRouterLink>
                 </Td>
                 <Td><Status compliant={row.compliant}>{row.compliant ? 'Compliant' : 'Not compliant'}</Status></Td>
                 <Td>{row.issues[0]}</Td>
