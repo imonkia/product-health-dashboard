@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../Sidebar/Sidebar.tsx';
 import { useSearchParams } from 'react-router-dom';
+import { apiService } from '../../services/api.ts';
 
 const Container = styled.div`
   display: flex;
@@ -108,7 +109,21 @@ const TextArea = styled.textarea`
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  margin: 16px 0;
+  margin: 8px 0;
+  gap: 8px;
+`;
+
+const Checkbox = styled.input`
+  margin: 0;
+`;
+
+const Select = styled.select`
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+  margin-left: 8px;
 `;
 
 const NestedCheckboxContainer = styled.div<{ disabled: boolean }>`
@@ -119,20 +134,6 @@ const NestedCheckboxContainer = styled.div<{ disabled: boolean }>`
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
 
-const Checkbox = styled.input`
-  margin-right: 12px;
-  transform: scale(1.2);
-`;
-
-const Select = styled.select`
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #fff;
-  margin-left: 12px;
-`;
-
 const AccordionHeader = styled.div<{ expanded: boolean }>`
   display: flex;
   align-items: center;
@@ -140,11 +141,13 @@ const AccordionHeader = styled.div<{ expanded: boolean }>`
   font-size: 18px;
   font-weight: 600;
   color: #1976d2;
-  padding: 16px 0;
+  background: none;
+  border: none;
+  padding: 12px 0;
   user-select: none;
-  transition: color 0.2s;
+  transition: background 0.15s;
   &:hover {
-    color: #1565c0;
+    background: #f5faff;
   }
 `;
 
@@ -158,13 +161,11 @@ const AccordionCaret = styled.span<{ expanded: boolean }>`
 
 const AccordionContent = styled.div<{ expanded: boolean }>`
   display: ${({ expanded }) => (expanded ? 'block' : 'none')};
-  padding: 0 16px;
+  padding: 16px 0;
 `;
 
 const LinksTable = styled.div`
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 0 16px 16px 16px;
+  margin-top: 16px;
 `;
 
 const LinkRow = styled.div`
@@ -172,28 +173,25 @@ const LinkRow = styled.div`
   grid-template-columns: 10px 40px repeat(3, 1fr);
   gap: 16px;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-  &:last-child {
-    border-bottom: none;
-  }
+  margin-bottom: 12px;
 `;
 
 const DeleteButton = styled.button`
-  background: none;
+  background: #e74c3c;
+  color: #fff;
   border: none;
-  color: #e74c3c;
-  cursor: pointer;
-  font-size: 18px;
+  border-radius: 50%;
   font-weight: bold;
   padding: 0;
   width: 14px;
-  height: 24px;
+  height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
   &:hover {
-    color: #c0392b;
+    background: #c0392b;
   }
 `;
 
@@ -245,6 +243,25 @@ const DeleteAppButton = styled.button`
   }
 `;
 
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #666;
+`;
+
+const ErrorMessage = styled.div`
+  color: #e53935;
+  text-align: center;
+  padding: 20px;
+`;
+
+interface Link {
+  order: number;
+  category: string;
+  linkName: string;
+  linkUrl: string;
+}
+
 const EditApp: React.FC = () => {
   const [searchParams] = useSearchParams();
   const appName = searchParams.get('appName') || 'App';
@@ -255,14 +272,79 @@ const EditApp: React.FC = () => {
   const [p0p1cP2hIncidents, setP0p1cP2hIncidents] = useState(true);
   const [includeInitialCi, setIncludeInitialCi] = useState(false);
   const [supportHours, setSupportHours] = useState(true);
+  
+  // API state
+  const [links, setLinks] = useState<Link[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const links = [
-    { order: 1, category: 'ServiceNow', linkName: 'Test 25', linkUrl: 'https://www.google.com' },
-    { order: 2, category: 'Database', linkName: 'Test 31', linkUrl: 'http://www.google.com' },
-    { order: 3, category: 'Link sorting', linkName: 'Testing Link Sorting', linkUrl: 'https://google.com' },
-    { order: 4, category: 'Splunk Dashboard', linkName: 'Content Dashboard', linkUrl: 'https://www.google.com/en-US/app/search/' },
-    { order: 5, category: 'Other Dashboards', linkName: 'Asset Dashboard', linkUrl: 'google.com' },
-  ];
+  useEffect(() => {
+    const fetchAppData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Extract app ID from appName (assuming appName is the ID)
+        const appId = appName.toLowerCase().replace(/\s+/g, '-');
+        
+        // Fetch application data including links
+        const appData = await apiService.getApplication(appId);
+        
+        if (appData && appData.links) {
+          setLinks(appData.links);
+        } else {
+          setLinks([]);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching app data:', error);
+        setError('Failed to load application data. Please try again.');
+        setLinks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppData();
+  }, [appName]);
+
+  if (loading) {
+    return (
+      <Container>
+        <Sidebar activeSection="admin" activeTab="groups" />
+        <MainContent>
+          <Header>
+            <div>
+              <HeaderTitle>{appName}</HeaderTitle>
+            </div>
+            <LastUpdates>Last_Updates</LastUpdates>
+          </Header>
+          <ContentArea>
+            <LoadingMessage>Loading application data...</LoadingMessage>
+          </ContentArea>
+        </MainContent>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Sidebar activeSection="admin" activeTab="groups" />
+        <MainContent>
+          <Header>
+            <div>
+              <HeaderTitle>{appName}</HeaderTitle>
+            </div>
+            <LastUpdates>Last_Updates</LastUpdates>
+          </Header>
+          <ContentArea>
+            <ErrorMessage>{error}</ErrorMessage>
+          </ContentArea>
+        </MainContent>
+      </Container>
+    );
+  }
 
   return (
     <Container>

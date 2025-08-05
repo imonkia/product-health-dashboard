@@ -5,26 +5,6 @@ interface VulnerabilitiesBodyProps {
   appVulnerabilities?: any[];
 }
 
-// Example mock data for vulnerabilities events (fallback)
-const vulnerabilitiesData = [
-  {
-    risk: 'vuln',
-    id: 'VULN-001',
-    vulnerability: 'OpenSSL CVE-2023-1234',
-    category: 'category 1',
-    fixByDate: '06/10/2024 10:00',
-    hosts: 2
-  },
-  {
-    risk: 'vuln',
-    id: 'VULN-002',
-    vulnerability: 'Log4Shell CVE-2021-44228',
-    category: 'category 2',
-    fixByDate: '06/09/2024 13:00',
-    hosts: 2
-  },
-];
-
 const TableWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
@@ -69,9 +49,6 @@ const Link = styled.a`
 `;
 
 const VulnerabilitiesBody: React.FC<VulnerabilitiesBodyProps> = ({ appVulnerabilities = [] }) => {
-  // Use appVulnerabilities if provided, otherwise use mock data
-  const data = appVulnerabilities.length > 0 ? appVulnerabilities : vulnerabilitiesData;
-
   return (
     <TableWrapper>
       <Table>
@@ -85,7 +62,7 @@ const VulnerabilitiesBody: React.FC<VulnerabilitiesBodyProps> = ({ appVulnerabil
           </tr>
         </Thead>
         <Tbody>
-          {data.map((row, idx) => (
+          {appVulnerabilities.map((row, idx) => (
             <tr key={row.id + idx}>
               <Td>{row.risk}</Td>
               <Td>{row.vulnerability}</Td>

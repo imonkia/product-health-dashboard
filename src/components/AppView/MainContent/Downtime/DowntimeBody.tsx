@@ -5,34 +5,6 @@ interface DowntimeBodyProps {
   appDowntime?: any[];
 }
 
-// Example mock data for downtime events (fallback)
-const downtimeData = [
-  {
-    type: 'planned',
-    id: 'DOWN000358239',
-    title: 'Test CR',
-    outageStart: '05/06/2021 15:00',
-    outageEnd: '05/06/2021 18:00',
-    downtimeTotal: 3.01,
-  },
-  {
-    type: 'planned',
-    id: 'DOWN000358219',
-    title: 'CR Test',
-    outageStart: '05/05/2021 11:00',
-    outageEnd: '05/05/2021 21:01',
-    downtimeTotal: 10.02,
-  },
-  {
-    type: 'unplanned',
-    id: 'DOWN000358999',
-    title: 'Unexpected Outage',
-    outageStart: '04/10/2021 09:00',
-    outageEnd: '04/10/2021 10:00',
-    downtimeTotal: 1.0,
-  },
-];
-
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -172,11 +144,8 @@ const DowntimeBody: React.FC<DowntimeBodyProps> = ({ appDowntime = [] }) => {
   const [sectionExpanded, setSectionExpanded] = useState([false, false]);
   const [monthExpanded, setMonthExpanded] = useState({});
 
-  // Use appDowntime if provided, otherwise use mock data
-  const data = appDowntime.length > 0 ? appDowntime : downtimeData;
-
-  const planned = data.filter(d => d.type === 'planned');
-  const unplanned = data.filter(d => d.type === 'unplanned');
+  const planned = appDowntime.filter(d => d.type === 'planned');
+  const unplanned = appDowntime.filter(d => d.type === 'unplanned');
 
   const plannedByMonth = groupByMonth(planned);
   const unplannedByMonth = groupByMonth(unplanned);

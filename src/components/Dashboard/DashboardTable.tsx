@@ -1,26 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { data, categories, statuses } from '../../mockDashboardData.ts';
 import { Link as RouterLink } from 'react-router-dom';
+import { apiService, transformDashboardData } from '../../services/api.ts';
+import Spinner from '../spinner.tsx';
 
 const TableContainer = styled.div`
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   overflow-x: auto;
-`;
-
-const FiltersRow = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 24px 24px 0 24px;
-`;
-
-const FilterLabel = styled.label`
-  font-size: 1rem;
-  color: #232e3c;
-  margin-right: 8px;
 `;
 
 const FilterSelect = styled.select`
@@ -103,22 +91,93 @@ const StyledRouterLink = styled(RouterLink)`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: #e53935;
+  text-align: center;
+  padding: 20px;
+  font-size: 1rem;
+`;
+
+interface DashboardData {
+  id: string;
+  name: string;
+  category: string;
+  compliant: boolean;
+  issues: number[];
+  vulns: number[];
+  patching: number[];
+  downtime: string[];
+}
+
 const DashboardTable: React.FC = () => {
   const [category, setCategory] = useState('All Categories');
   const [status, setStatus] = useState('Any Status');
+  const [data, setData] = useState<DashboardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [statuses, setStatuses] = useState<string[]>([]);
 
-  const columns = [
-    { key: 'name', label: 'Product/System' },
-    { key: 'status', label: 'Status' },
-    { key: 'issuesOpen', label: 'Open' },
-    { key: 'issuesOverdue', label: 'Overdue' },
-    { key: 'vulns30', label: '≤ 30 days' },
-    { key: 'vulnsOverdue', label: 'Overdue' },
-    { key: 'patchProd', label: 'Prod' },
-    { key: 'patchNonProd', label: 'Non-Prod' },
-    { key: 'downLastMonth', label: 'Last Month' },
-    { key: 'down6Months', label: 'Last 6 Months' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch applications
+        const applications = await apiService.getApplications();
+        const transformedData = transformDashboardData(applications);
+        
+        // Fetch opex data for each app to get detailed metrics
+        const enrichedData = await Promise.all(
+          transformedData.map(async (app) => {
+            try {
+              const opexData = await apiService.getOpexData(app.id);
+              return {
+                ...app,
+                issues: [
+                  opexData.issues?.filter((i: any) => i.status === 'Open').length || 0,
+                  opexData.issues?.filter((i: any) => i.status === 'Overdue').length || 0
+                ],
+                vulns: [
+                  opexData.vulnerabilities?.filter((v: any) => v.severity === 'High').length || 0,
+                  opexData.vulnerabilities?.filter((v: any) => v.severity === 'Critical').length || 0
+                ],
+                patching: [
+                  opexData.patching?.filter((p: any) => p.status === 'Pending').length || 0,
+                  opexData.patching?.filter((p: any) => p.status === 'Overdue').length || 0
+                ],
+                downtime: [
+                  opexData.downtime?.length?.toString() || '0',
+                  opexData.majorIncident?.length?.toString() || '0'
+                ]
+              };
+            } catch (error) {
+              console.error(`Error fetching opex data for ${app.id}:`, error);
+              return app;
+            }
+          })
+        );
+        
+        setData(enrichedData);
+        
+        // Extract unique categories and statuses
+        const uniqueCategories = [...new Set(enrichedData.map(item => item.category))];
+        const uniqueStatuses = ['Compliant', 'Not compliant'];
+        
+        setCategories(['All Categories', ...uniqueCategories]);
+        setStatuses(['Any Status', ...uniqueStatuses]);
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Map data for sorting
   const mapped = data.map(row => ({
@@ -135,10 +194,17 @@ const DashboardTable: React.FC = () => {
 
   const filtered = mapped.filter(row =>
     (category === 'All Categories' || row.category === category) &&
-    (status === 'Any Status' || row.status === status)
+    (status === 'Any Status' || (status === 'Compliant' ? row.compliant : !row.compliant))
   );
 
-  const sorted = filtered;
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <ErrorMessage>{error}</ErrorMessage>;
+  }
+
   return (
     <>
       <TableContainer>
@@ -181,7 +247,7 @@ const DashboardTable: React.FC = () => {
               <Th>Last Month</Th>
               <Th>Last 6 Months</Th>
             </tr>
-            {sorted.map((row, idx) => (
+            {filtered.map((row, idx) => (
               <Tr key={row.id} zebra={idx % 2 === 1}>
                 <Td>
                   <StyledRouterLink to={`/apps/${row.id}`}>

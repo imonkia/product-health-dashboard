@@ -5,82 +5,6 @@ interface IssuesBodyProps {
   appIssues?: any[];
 }
 
-// Mock data for each section (fallback)
-const mockSections = [
-  {
-    label: 'Compliance',
-    count: 0,
-    rows: [],
-  },
-  {
-    label: 'Operational Excellence',
-    count: 2,
-    rows: [
-      {
-        source: 'anteater',
-        id: '72299672',
-        title: 'Include due date when calculating compliance status for CST issues',
-        status: 'Analyze',
-        priority: 1,
-        dueDate: '',
-        keywords: 'K2-AX, K2-OpEx',
-        fixEta: '',
-        dri: 'Jack the Ripper',
-      },
-      {
-        source: 'anteater',
-        id: '72137489',
-        title: 'Add alpha/numeric link sorting',
-        status: 'Analyze',
-        priority: 1,
-        dueDate: '',
-        keywords: 'K2-AX, K2-OpEx',
-        fixEta: '',
-        dri: 'Edward Scissorhands',
-      },
-    ],
-  },
-  {
-    label: 'Accessibility',
-    count: 1,
-    rows: [
-      {
-        source: 'anteater',
-        id: '72137489',
-        title: 'Add alpha/numeric link sorting',
-        status: 'Analyze',
-        priority: 1,
-        dueDate: '',
-        keywords: 'K2-AX, K2-OpEx',
-        fixEta: '',
-        dri: 'Monica A',
-      },
-      {
-        source: 'anteater',
-        id: '72137489',
-        title: 'Add alpha/numeric link sorting',
-        status: 'Analyze',
-        priority: 1,
-        dueDate: '',
-        keywords: 'K2-AX, K2-OpEx',
-        fixEta: '',
-        dri: 'Monica A',
-      },
-      {
-        source: 'anteater',
-        id: '72137489',
-        title: 'Add alpha/numeric link sorting',
-        status: 'Analyze',
-        priority: 1,
-        dueDate: '',
-        keywords: 'K2-AX, K2-OpEx',
-        fixEta: '',
-        dri: 'Monica A',
-      },
-    ],
-  },
-];
-
 const SectionWrapper = styled.div`
   margin-bottom: 8px;
 `;
@@ -168,26 +92,24 @@ const Caret = styled.span<{ expanded: boolean }>`
 const IssuesBody: React.FC<IssuesBodyProps> = ({ appIssues = [] }) => {
   const [expanded, setExpanded] = useState([false, true, false]);
 
-  // Use appIssues if provided, otherwise use mock data
-  const sections = appIssues.length > 0 ? 
-    // Transform appIssues into the expected format
-    [
-      {
-        label: 'Compliance',
-        count: appIssues.filter(issue => issue.category === 'compliance').length,
-        rows: appIssues.filter(issue => issue.category === 'compliance'),
-      },
-      {
-        label: 'Operational Excellence',
-        count: appIssues.filter(issue => issue.category === 'operational').length,
-        rows: appIssues.filter(issue => issue.category === 'operational'),
-      },
-      {
-        label: 'Accessibility',
-        count: appIssues.filter(issue => issue.category === 'accessibility').length,
-        rows: appIssues.filter(issue => issue.category === 'accessibility'),
-      },
-    ] : mockSections;
+  // Transform appIssues into the expected format
+  const sections = [
+    {
+      label: 'Compliance',
+      count: appIssues.filter(issue => issue.category === 'compliance').length,
+      rows: appIssues.filter(issue => issue.category === 'compliance'),
+    },
+    {
+      label: 'Operational Excellence',
+      count: appIssues.filter(issue => issue.category === 'operational').length,
+      rows: appIssues.filter(issue => issue.category === 'operational'),
+    },
+    {
+      label: 'Accessibility',
+      count: appIssues.filter(issue => issue.category === 'accessibility').length,
+      rows: appIssues.filter(issue => issue.category === 'accessibility'),
+    },
+  ];
 
   const toggleSection = (idx: number) => {
     setExpanded(expanded => expanded.map((v, i) => (i === idx ? !v : v)));

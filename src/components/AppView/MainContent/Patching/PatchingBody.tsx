@@ -5,24 +5,6 @@ interface PatchingBodyProps {
   appPatching?: any[];
 }
 
-// Example mock data for patching events (fallback)
-const patchingData = [
-  {
-    environment: 'Test',
-    id: '-001',
-    hostname: 'some-hostname.subdomain.domain.com',
-    ip: '192.168.1.1',
-    status: 'Compliant'
-  },
-  {
-    environment: 'Test',
-    id: 'PATCH-002',
-    hostname: 'some-other-hostname.subdomain.domain.com',
-    ip: '192.168.1.2',
-    status: 'Expired',
-  },
-];
-
 const TableWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
@@ -67,9 +49,6 @@ const Link = styled.a`
 `;
 
 const PatchingBody: React.FC<PatchingBodyProps> = ({ appPatching = [] }) => {
-  // Use appPatching if provided, otherwise use mock data
-  const data = appPatching.length > 0 ? appPatching : patchingData;
-
   return (
     <TableWrapper>
       <Table>
@@ -83,7 +62,7 @@ const PatchingBody: React.FC<PatchingBodyProps> = ({ appPatching = [] }) => {
           </tr>
         </Thead>
         <Tbody>
-          {data.map((row, idx) => (
+          {appPatching.map((row, idx) => (
             <tr key={row.id + idx}>
               <Td>{row.environment}</Td>
               <Td>
@@ -93,6 +72,7 @@ const PatchingBody: React.FC<PatchingBodyProps> = ({ appPatching = [] }) => {
               </Td>
               <Td>{row.hostname}</Td>
               <Td>{row.ip}</Td>
+              <Td>{row.patchDate}</Td>
               <Td>{row.status}</Td>
             </tr>
           ))}

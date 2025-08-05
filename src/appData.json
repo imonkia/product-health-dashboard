@@ -1,0 +1,33 @@
+{
+    "data": {
+    "notificationSchedule": true,
+    "kpiSupportGroup": "",
+    "kpis": ["KpiTimeWorked", "KpiHighPriority"],
+    "links": [
+        {
+            "category": "Category 1",
+            "value": "Value 1",
+            "sortOrder": 1
+        }
+    ],
+    "name": "",
+    "groupId": "",
+    "cstAppId": "",
+    "cstConfigurationItem": "",
+    "cstConfigurationItemCode": "",
+    "trackerComponent": "",
+    "isdbUuid": "",
+    "category": {
+        "id": "",
+        "name": ""
+    },
+    "emailFrequency": "",
+    "newCat": "",
+    "loading": false,
+    "customKeywords": "",
+    "abcWorkGroup": "",
+    "includeSupportHours": "",
+    "includeInitialCI": "",
+    "includePriority": ""
+    }
+}
