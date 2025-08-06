@@ -2,9 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
+
+// Import database connection
+const connectDB = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware
 app.use(cors());

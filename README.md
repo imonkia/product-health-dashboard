@@ -10,7 +10,7 @@ This repository contains a mockup of a product health dashboard application I wo
 - **Collapsible Sections**: Organized data presentation with expandable sections
 - **Administration**: Edit app configuration with form-based interface
 - **Responsive Design**: Modern UI with styled-components
-- **Real-time Data**: Connected to Node.js backend API
+- **Real-time Data**: Connected to Node.js backend API with MongoDB persistence
 
 ## Technology Stack
 
@@ -24,15 +24,18 @@ This repository contains a mockup of a product health dashboard application I wo
 
 ### Backend
 - **Node.js** with Express
+- **MongoDB** with Mongoose ODM for data persistence
 - **CORS** for cross-origin requests
 - **Moment.js** for date calculations
 - **UUID** for unique identifiers
+- **dotenv** for environment configuration
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
+- MongoDB (local installation or cloud service)
 
 ### Installation
 
@@ -52,6 +55,27 @@ This repository contains a mockup of a product health dashboard application I wo
    cd server
    npm install
    ```
+
+4. **Set up MongoDB**
+   - Install MongoDB locally or use a cloud service (MongoDB Atlas)
+   - Create a database for the application
+   - Update the MongoDB URI in `server/.env`
+
+5. **Configure environment variables**
+   ```bash
+   cd server
+   # Update the .env file with your MongoDB URI
+   echo "MONGODB_URI=your_mongodb_connection_string" > .env
+   echo "PORT=3001" >> .env
+   echo "NODE_ENV=development" >> .env
+   ```
+
+6. **Seed the database**
+   ```bash
+   cd server
+   npm run seed
+   ```
+   > **Note**: This command should only be run during initial setup or when you want to reset the database to a clean state. Once seeded, data persists across server restarts and normal development. Only run this again if you need to clear all data and start fresh.
 
 ### Running the Application
 
@@ -94,18 +118,62 @@ This repository contains a mockup of a product health dashboard application I wo
 
 ## API Integration
 
-The frontend is now connected to the Node.js backend API. The application uses the following endpoints:
+The frontend is now connected to the Node.js backend API with MongoDB persistence. The application uses the following endpoints:
 
 - `GET /api/v1/app/applications` - List all applications
+- `GET /api/v1/app/applications/:id` - Get specific application with links
 - `GET /api/v1/app/opex/:appId` - Get operational excellence data for an app
 - `GET /api/v1/app/user` - Get user authentication info
 - `GET /health` - Server health check
 
 ### Data Flow
 
-1. **Dashboard**: Fetches application list and enriches with opex data
-2. **App Views**: Loads detailed operational data for specific applications
-3. **Real-time Updates**: All data is fetched from the server instead of mock data
+1. **Dashboard**: Fetches application list and enriches with opex data from MongoDB
+2. **App Views**: Loads detailed operational data for specific applications from database
+3. **Real-time Updates**: All data is fetched from the server and persisted in MongoDB
+4. **Administration**: Links data is dynamically loaded from MongoDB
+
+## Database Schema
+
+### Applications Collection
+```javascript
+{
+  id: String,           // Unique application identifier
+  name: String,         // Application name
+  category: String,     // Application category
+  groupName: String,    // Group name
+  gatehouseCheckin: Boolean,
+  gatehouseCheckinDate: String,
+  links: [              // Array of application links
+    {
+      order: Number,
+      category: String,
+      linkName: String,
+      linkUrl: String
+    }
+  ]
+}
+```
+
+### OpexData Collection
+```javascript
+{
+  id: String,           // Application identifier
+  name: String,         // Application name
+  compliance: {         // Compliance information
+    compliant: Boolean,
+    complianceSince: String
+  },
+  issues: [...],        // Array of issues
+  vulnerabilities: [...], // Array of vulnerabilities
+  patching: [...],      // Array of patching data
+  downtime: [...],      // Array of downtime events
+  majorIncident: [...], // Array of major incidents
+  groupName: String,
+  gatehouseCheckin: Boolean,
+  gatehouseCheckinDate: String
+}
+```
 
 ## Project Structure
 
@@ -121,11 +189,19 @@ product-health-dashboard/
 │   │   └── api.ts            # API service layer
 │   └── mockDashboardData.ts  # Legacy mock data (now unused)
 ├── server/
+│   ├── config/
+│   │   └── database.js       # MongoDB connection configuration
+│   ├── models/
+│   │   ├── Application.js    # Application data model
+│   │   └── OpexData.js       # Operational excellence data model
 │   ├── routes/
 │   │   ├── auth.js           # Authentication endpoints
 │   │   ├── applications.js   # Application endpoints
 │   │   └── opex.js          # Operational excellence endpoints
+│   ├── scripts/
+│   │   └── seedDatabase.js   # Database seeding script
 │   ├── server.js             # Main server file
+│   ├── .env                  # Environment variables
 │   └── package.json          # Backend dependencies
 └── package.json              # Frontend dependencies
 ```
@@ -141,7 +217,7 @@ product-health-dashboard/
 ### App View
 - Tabbed interface for Issues, Vulnerabilities, Patching, Downtime
 - Collapsible sections for organized data presentation
-- Real-time data from server API
+- Real-time data from MongoDB via server API
 - Compliance status header with popover for non-compliant apps
 
 ### Administration
@@ -149,6 +225,7 @@ product-health-dashboard/
 - Collapsible sections for KPIs and Links
 - Nested checkbox relationships
 - URL parameter integration for app selection
+- Dynamic links loading from MongoDB
 
 ## Development
 
@@ -158,6 +235,12 @@ product-health-dashboard/
 2. **Frontend**: Add new methods in `src/services/api.ts`
 3. **Components**: Use the API service in your components
 
+### Database Operations
+
+1. **Seeding**: Run `npm run seed` in server directory
+2. **Migrations**: Update models in `server/models/`
+3. **Queries**: Use Mongoose queries in route handlers
+
 ### Environment Configuration
 
 The frontend automatically connects to `http://localhost:3001` for the API. To change this:
@@ -165,17 +248,28 @@ The frontend automatically connects to `http://localhost:3001` for the API. To c
 1. Create a `.env` file in the root directory
 2. Add: `REACT_APP_API_URL=http://your-api-url`
 
+The backend uses MongoDB. Update the connection string in `server/.env`:
+```
+MONGODB_URI=your_mongodb_connection_string
+```
+
 ## Troubleshooting
 
 ### Common Issues
 
-1. **CORS Errors**: Ensure the backend server is running on port 3001
-2. **API Connection Failed**: Check that the server is running and accessible
-3. **Data Not Loading**: Verify the API endpoints are working correctly
+1. **MongoDB Connection Failed**: 
+   - Verify MongoDB is running
+   - Check connection string in `.env`
+   - Ensure network connectivity
+
+2. **CORS Errors**: Ensure the backend server is running on port 3001
+3. **API Connection Failed**: Check that the server is running and accessible
+4. **Data Not Loading**: Verify the API endpoints are working correctly
+5. **Database Empty**: Run `npm run seed` to populate initial data
 
 ### Debug Mode
 
-Enable detailed logging by checking the browser console for API request/response logs.
+Enable detailed logging by checking the browser console for API request/response logs and server console for MongoDB connection status.
 
 ## Disclaimer
 
