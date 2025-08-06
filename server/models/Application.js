@@ -1,51 +1,28 @@
 const mongoose = require('mongoose');
 
 const linkSchema = new mongoose.Schema({
-  order: {
-    type: Number,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true
-  },
-  linkName: {
-    type: String,
-    required: true
-  },
-  linkUrl: {
-    type: String,
-    required: true
-  }
+  order: { type: Number, required: true },
+  category: { type: String, required: true },
+  linkName: { type: String, required: true },
+  linkUrl: { type: String, required: true }
 });
 
 const applicationSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true
-  },
-  groupName: {
-    type: String,
-    required: true
-  },
-  gatehouseCheckin: {
-    type: Boolean,
-    default: false
-  },
-  gatehouseCheckinDate: {
-    type: String,
-    required: true
-  },
-  links: [linkSchema]
+  id: { type: Number, required: true, unique: true },
+  name: { type: String, required: true },
+  category: { type: String, required: true },
+  groupName: { type: String, default: '' },
+  gatehouseCheckin: { type: Boolean, default: false },
+  gatehouseCheckinDate: { type: String, default: '' },
+  links: [linkSchema],
+  // New fields for form updates
+  customKeywords: { type: String, default: '' },
+  emailNotifications: { type: Boolean, default: false },
+  emailNotificationFrequency: { type: String, default: 'Monthly' },
+  p0p1cP2hIncidents: { type: Boolean, default: false },
+  includeInitialCi: { type: Boolean, default: false },
+  supportHours: { type: Boolean, default: false },
+  abcWorkgroup: { type: String, default: '' }
 }, {
   timestamps: true
 });

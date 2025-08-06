@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Sidebar from '../Sidebar/Sidebar.tsx';
 import { useSearchParams } from 'react-router-dom';
 import { apiService } from '../../services/api.ts';
+import Toaster from '../Toaster/Toaster.tsx';
 
 const Container = styled.div`
   display: flex;
@@ -110,6 +111,7 @@ const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
   margin: 8px 0;
+  padding: 0 12px;
   gap: 8px;
 `;
 
@@ -129,7 +131,8 @@ const Select = styled.select`
 const NestedCheckboxContainer = styled.div<{ disabled: boolean }>`
   display: flex;
   align-items: center;
-  margin: 8px 0 8px 24px;
+  gap: 8px;
+  margin: 8px 0 8px 36px;
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
@@ -227,6 +230,13 @@ const SaveButton = styled.button`
   &:hover {
     background: #1565c0;
   }
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    &:hover {
+      background: #ccc;
+    }
+  }
 `;
 
 const DeleteAppButton = styled.button`
@@ -264,6 +274,7 @@ interface Link {
 
 const EditApp: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const appId = searchParams.get('appId');
   const appName = searchParams.get('appName') || 'App';
   
   const [kpisExpanded, setKpisExpanded] = useState(true);
@@ -273,10 +284,29 @@ const EditApp: React.FC = () => {
   const [includeInitialCi, setIncludeInitialCi] = useState(false);
   const [supportHours, setSupportHours] = useState(true);
   
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    category: '',
+    groupName: '',
+    gatehouseCheckin: false,
+    gatehouseCheckinDate: '',
+    customKeywords: '',
+    emailNotificationFrequency: 'Monthly',
+    abcWorkgroup: ''
+  });
+  
   // API state
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  
+  // Toaster state
+  const [toasterMessage, setToasterMessage] = useState('');
+  const [toasterType, setToasterType] = useState<'success' | 'error'>('success');
+  const [toasterVisible, setToasterVisible] = useState(false);
 
   useEffect(() => {
     const fetchAppData = async () => {
@@ -284,14 +314,31 @@ const EditApp: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        // Extract app ID from appName (assuming appName is the ID)
-        const appId = appName.toLowerCase().replace(/\s+/g, '-');
+        if (!appId) {
+          setError('No application ID provided');
+          setLoading(false);
+          return;
+        }
         
         // Fetch application data including links
         const appData = await apiService.getApplication(appId);
         
-        if (appData && appData.links) {
-          setLinks(appData.links);
+        if (appData) {
+          setLinks(appData.links || []);
+          setFormData({
+            name: appData.name || '',
+            category: appData.category || '',
+            groupName: appData.groupName || '',
+            gatehouseCheckin: appData.gatehouseCheckin || false,
+            gatehouseCheckinDate: appData.gatehouseCheckinDate || '',
+            customKeywords: appData.customKeywords || '',
+            emailNotificationFrequency: appData.emailNotificationFrequency || 'Monthly',
+            abcWorkgroup: appData.abcWorkgroup || ''
+          });
+          setEmailNotifications(appData.emailNotifications || false);
+          setP0p1cP2hIncidents(appData.p0p1cP2hIncidents || false);
+          setIncludeInitialCi(appData.includeInitialCi || false);
+          setSupportHours(appData.supportHours || false);
         } else {
           setLinks([]);
         }
@@ -306,7 +353,95 @@ const EditApp: React.FC = () => {
     };
 
     fetchAppData();
-  }, [appName]);
+  }, [appId]);
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+      setSaveSuccess(false);
+      
+      if (!appId) {
+        setToasterMessage('No application ID provided');
+        setToasterType('error');
+        setToasterVisible(true);
+        return;
+      }
+      
+      // Prepare update data
+      const updateData = {
+        ...formData,
+        links,
+        emailNotifications,
+        p0p1cP2hIncidents,
+        includeInitialCi,
+        supportHours
+      };
+      
+      // Call API to update application
+      await apiService.updateApplication(appId, updateData);
+      
+      // Also update the opex data name if it changed
+      try {
+        await apiService.updateOpexData(appId, { name: formData.name });
+      } catch (error) {
+        console.error('Error updating opex data name:', error);
+        // Don't fail the save if opex update fails
+      }
+      
+      setToasterMessage('Application saved successfully!');
+      setToasterType('success');
+      setToasterVisible(true);
+      
+    } catch (error) {
+      console.error('Error saving application:', error);
+      setToasterMessage('Failed to save application. Please try again.');
+      setToasterType('error');
+      setToasterVisible(true);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLinkChange = (index: number, field: keyof Link, value: any) => {
+    const updatedLinks = [...links];
+    updatedLinks[index] = {
+      ...updatedLinks[index],
+      [field]: field === 'order' ? parseInt(value) || 0 : value
+    };
+    setLinks(updatedLinks);
+  };
+
+  const handleAddLink = () => {
+    const newLink: Link = {
+      order: links.length + 1,
+      category: '',
+      linkName: '',
+      linkUrl: ''
+    };
+    setLinks([...links, newLink]);
+  };
+
+  const handleDeleteLink = (index: number) => {
+    const updatedLinks = links.filter((_, i) => i !== index);
+    // Reorder remaining links
+    const reorderedLinks = updatedLinks.map((link, i) => ({
+      ...link,
+      order: i + 1
+    }));
+    setLinks(reorderedLinks);
+  };
+
+  const handleToasterClose = () => {
+    setToasterVisible(false);
+  };
 
   if (loading) {
     return (
@@ -315,9 +450,9 @@ const EditApp: React.FC = () => {
         <MainContent>
           <Header>
             <div>
-              <HeaderTitle>{appName}</HeaderTitle>
+              <HeaderTitle>{formData.name || appName}</HeaderTitle>
             </div>
-            <LastUpdates>Last_Updates</LastUpdates>
+            <LastUpdates>Loading...</LastUpdates>
           </Header>
           <ContentArea>
             <LoadingMessage>Loading application data...</LoadingMessage>
@@ -334,9 +469,9 @@ const EditApp: React.FC = () => {
         <MainContent>
           <Header>
             <div>
-              <HeaderTitle>{appName}</HeaderTitle>
+              <HeaderTitle>{formData.name || appName}</HeaderTitle>
             </div>
-            <LastUpdates>Last_Updates</LastUpdates>
+            <LastUpdates>Error</LastUpdates>
           </Header>
           <ContentArea>
             <ErrorMessage>{error}</ErrorMessage>
@@ -352,9 +487,11 @@ const EditApp: React.FC = () => {
       <MainContent>
         <Header>
           <div>
-            <HeaderTitle>{appName}</HeaderTitle>
+            <HeaderTitle>{formData.name || appName}</HeaderTitle>
           </div>
-          <LastUpdates>Last_Updates</LastUpdates>
+          <LastUpdates>
+            {saveSuccess ? 'Just updated' : 'Last_Updates'}
+          </LastUpdates>
         </Header>
         <ContentArea>
           <Section>
@@ -363,37 +500,47 @@ const EditApp: React.FC = () => {
               <div>
                 <FormGroup>
                   <Label>App Name</Label>
-                  <Input defaultValue={appName} />
+                  <Input 
+                    value={formData.name} 
+                    onChange={(e) => handleInputChange('name', e.target.value)} 
+                  />
                 </FormGroup>
                 <FormGroup>
                   <Label>Internal Name</Label>
-                  <Input defaultValue={appName} />
+                  <Input 
+                    value={formData.name} 
+                    onChange={(e) => handleInputChange('name', e.target.value)} 
+                  />
                 </FormGroup>
                 <FormGroup>
                   <Label>Category</Label>
-                  <Input defaultValue="Retail" />
+                  <Input 
+                    value={formData.category} 
+                    onChange={(e) => handleInputChange('category', e.target.value)} 
+                  />
                 </FormGroup>
                 <FormGroup>
                   <Label>pulsesys</Label>
-                  <Input defaultValue="" />
+                  <Input 
+                    value={formData.groupName} 
+                    onChange={(e) => handleInputChange('groupName', e.target.value)} 
+                  />
                 </FormGroup>
               </div>
               <div>
                 <FormGroup>
-                  <Label>App Id</Label>
-                  <Input defaultValue="57166" readOnly />
+                  <Label>Gatehouse Checkin</Label>
+                  <Input 
+                    value={formData.gatehouseCheckinDate} 
+                    onChange={(e) => handleInputChange('gatehouseCheckinDate', e.target.value)} 
+                  />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Internal Code</Label>
-                  <Input defaultValue="6f329b8ec3145200e4868d4fed5d7578" readOnly />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Tracker Component</Label>
-                  <Input defaultValue={appName} readOnly />
-                </FormGroup>
-                <FormGroup>
-                  <Label>DB UUID</Label>
-                  <Input defaultValue="12345678" readOnly />
+                  <Label>Gatehouse Checkin Date</Label>
+                  <Input 
+                    value={formData.gatehouseCheckinDate} 
+                    onChange={(e) => handleInputChange('gatehouseCheckinDate', e.target.value)} 
+                  />
                 </FormGroup>
               </div>
             </FormGrid>
@@ -402,7 +549,10 @@ const EditApp: React.FC = () => {
             
             <FormGroup>
               <Label>Custom Keywords</Label>
-              <TextArea defaultValue="ima-test-keyword,ima-test-keyword-2" />
+              <TextArea 
+                value={formData.customKeywords} 
+                onChange={(e) => handleInputChange('customKeywords', e.target.value)} 
+              />
               <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
                 Incidents or trackers that include custom keywords will be automatically imported to the compliance section of the issues tab.
               </div>
@@ -413,9 +563,13 @@ const EditApp: React.FC = () => {
                 type="checkbox"
                 checked={emailNotifications}
                 onChange={(e) => setEmailNotifications(e.target.checked)}
+                style={{ marginLeft: '-12px' }}
               />
               <span>Email Notifications</span>
-              <Select value="Monthly">
+              <Select 
+                value={formData.emailNotificationFrequency}
+                onChange={(e) => handleInputChange('emailNotificationFrequency', e.target.value)}
+              >
                 <option>Monthly</option>
                 <option>Weekly</option>
                 <option>Daily</option>
@@ -455,7 +609,11 @@ const EditApp: React.FC = () => {
               <NestedCheckboxContainer disabled={!supportHours}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
                   <Label>ABC Workgroup</Label>
-                  <Input defaultValue="ABC DEF Support" disabled={!supportHours} />
+                  <Input 
+                    value={formData.abcWorkgroup} 
+                    onChange={(e) => handleInputChange('abcWorkgroup', e.target.value)} 
+                    disabled={!supportHours} 
+                  />
                 </div>
               </NestedCheckboxContainer>
             </AccordionContent>
@@ -475,23 +633,45 @@ const EditApp: React.FC = () => {
                 </div>
                 {links.map((link, index) => (
                   <LinkRow key={index}>
-                    <DeleteButton>×</DeleteButton>
-                    <Input defaultValue={link.order} style={{ width: '10px' }} />
-                    <Input defaultValue={link.category} />
-                    <Input defaultValue={link.linkName} />
-                    <Input defaultValue={link.linkUrl} />
+                    <DeleteButton onClick={() => handleDeleteLink(index)}>×</DeleteButton>
+                    <Input 
+                      type="number" 
+                      value={link.order} 
+                      onChange={(e) => handleLinkChange(index, 'order', e.target.value)} 
+                      style={{ width: '10px' }} 
+                    />
+                    <Input 
+                      value={link.category} 
+                      onChange={(e) => handleLinkChange(index, 'category', e.target.value)} 
+                    />
+                    <Input 
+                      value={link.linkName} 
+                      onChange={(e) => handleLinkChange(index, 'linkName', e.target.value)} 
+                    />
+                    <Input 
+                      value={link.linkUrl} 
+                      onChange={(e) => handleLinkChange(index, 'linkUrl', e.target.value)} 
+                    />
                   </LinkRow>
                 ))}
-                <AddLinkButton>+ Add new link</AddLinkButton>
+                <AddLinkButton onClick={handleAddLink}>+ Add new link</AddLinkButton>
               </LinksTable>
             </AccordionContent>
           </Section>
 
           <ActionButtons>
-            <SaveButton>Save</SaveButton>
+            <SaveButton onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving...' : 'Save'}
+            </SaveButton>
             <DeleteAppButton>Delete</DeleteAppButton>
           </ActionButtons>
         </ContentArea>
+        <Toaster 
+          type={toasterType} 
+          message={toasterMessage} 
+          isVisible={toasterVisible}
+          onClose={handleToasterClose} 
+        />
       </MainContent>
     </Container>
   );

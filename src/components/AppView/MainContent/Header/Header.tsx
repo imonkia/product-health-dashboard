@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   appName: string;
+  appId?: string;
   isCompliant: boolean;
   nonComplianceInfo?: string;
   nonCompliantDays?: number;
@@ -92,6 +93,7 @@ const Popover = styled.div`
 
 const Header: React.FC<HeaderProps> = ({
   appName,
+  appId,
   isCompliant,
   nonComplianceInfo,
   nonCompliantDays,
@@ -107,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({
     <HeaderBar isCompliant={isCompliant}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <AppName>{appName}</AppName>
-        <EditLink to={`/admin?appName=${encodeURIComponent(appName)}`}>edit</EditLink>
+        <EditLink to={`/admin?appId=${appId}&appName=${encodeURIComponent(appName)}`}>edit</EditLink>
       </div>
       <StatusArea>
         {!isCompliant && (

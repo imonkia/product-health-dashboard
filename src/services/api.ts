@@ -48,16 +48,48 @@ export const apiService = {
     return response.data;
   },
 
-  // Get specific application
-  getApplication: async (id: string) => {
-    const response = await api.get(`/api/v1/app/applications/${id}`);
-    return response.data;
+  // Get specific application by ID
+  getApplication: async (id: string | number) => {
+    try {
+      const response = await api.get(`/api/v1/app/applications/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching application:', error);
+      throw error;
+    }
   },
 
-  // Get operational excellence data for an app
-  getOpexData: async (appId: string) => {
-    const response = await api.get(`/api/v1/app/opex/${appId}`);
-    return response.data;
+  // Update application by ID
+  updateApplication: async (id: string | number, updateData: any) => {
+    try {
+      const response = await api.put(`/api/v1/app/applications/${id}`, updateData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating application:', error);
+      throw error;
+    }
+  },
+
+  // Get operational excellence data for a specific app
+  getOpexData: async (appId: string | number) => {
+    try {
+      const response = await api.get(`/api/v1/app/opex/${appId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching opex data:', error);
+      throw error;
+    }
+  },
+
+  // Update operational excellence data for a specific app
+  updateOpexData: async (appId: string | number, updateData: any) => {
+    try {
+      const response = await api.put(`/api/v1/app/opex/${appId}`, updateData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating opex data:', error);
+      throw error;
+    }
   },
 
   // Get host data for a vulnerability

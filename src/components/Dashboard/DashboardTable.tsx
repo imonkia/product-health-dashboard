@@ -99,7 +99,7 @@ const ErrorMessage = styled.div`
 `;
 
 interface DashboardData {
-  id: string;
+  id: number;
   name: string;
   category: string;
   compliant: boolean;

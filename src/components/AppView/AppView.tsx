@@ -36,6 +36,9 @@ const AppView = () => {
         setError(null);
         _isMounted.current = true;
 
+        // Fetch application data to get current name
+        const appData = await apiService.getApplication(appId);
+        
         // Fetch operational excellence data for the app
         const opexData = await apiService.getOpexData(appId);
         
@@ -54,6 +57,14 @@ const AppView = () => {
         );
         setUnplannedAppDowntime(transformedData.majorIncident || []);
         setAppDetails(transformedData);
+
+        // Store the current app name from application data
+        if (appData && appData.name) {
+          setAppDetails(prev => ({
+            ...prev,
+            name: appData.name
+          }));
+        }
 
       } catch (error) {
         console.error('Error fetching app data:', error);
@@ -95,6 +106,7 @@ const AppView = () => {
       <>
         <Header
           appName={getAppName()}
+          appId={appId}
           isCompliant={compliant}
           nonComplianceInfo={!compliant ? 'This app is not compliant. Please review the issues.' : undefined}
           nonCompliantDays={!compliant ? complianceDuration : undefined}

@@ -8,7 +8,7 @@ const OpexData = require('../models/OpexData');
 // Sample applications data
 const applications = [
   {
-    id: 'atlas-crm',
+    id: 1,
     name: 'Atlas CRM',
     category: 'CRM',
     groupName: 'CRM',
@@ -22,7 +22,7 @@ const applications = [
     ]
   },
   {
-    id: 'nova-analytics',
+    id: 2,
     name: 'Nova Analytics',
     category: 'Analytics',
     groupName: 'Analytics',
@@ -36,7 +36,7 @@ const applications = [
     ]
   },
   {
-    id: 'zenith-portal',
+    id: 3,
     name: 'Zenith Portal',
     category: 'Portal',
     groupName: 'Portal',
@@ -50,7 +50,7 @@ const applications = [
     ]
   },
   {
-    id: 'orion-scheduler',
+    id: 4,
     name: 'Orion Scheduler',
     category: 'Scheduler',
     groupName: 'Scheduler',
@@ -64,7 +64,7 @@ const applications = [
     ]
   },
   {
-    id: 'pulse-mobile',
+    id: 5,
     name: 'Pulse Mobile',
     category: 'Mobile',
     groupName: 'Mobile',
@@ -78,7 +78,7 @@ const applications = [
     ]
   },
   {
-    id: 'helix-gateway',
+    id: 6,
     name: 'Helix Gateway',
     category: 'Gateway',
     groupName: 'Gateway',
@@ -96,7 +96,7 @@ const applications = [
 // Sample opex data
 const opexData = [
   {
-    id: 'atlas-crm',
+    id: 1,
     name: 'Atlas CRM',
     compliance: { 
       compliant: true, 
@@ -168,7 +168,7 @@ const opexData = [
     gatehouseCheckinDate: '2024-06-01',
   },
   {
-    id: 'nova-analytics',
+    id: 2,
     name: 'Nova Analytics',
     compliance: { 
       compliant: false, 
@@ -236,7 +236,7 @@ const opexData = [
     gatehouseCheckinDate: '2024-06-01',
   },
   {
-    id: 'zenith-portal',
+    id: 3,
     name: 'Zenith Portal',
     compliance: { 
       compliant: false, 
@@ -291,7 +291,7 @@ const opexData = [
     gatehouseCheckinDate: '2024-06-01',
   },
   {
-    id: 'orion-scheduler',
+    id: 4,
     name: 'Orion Scheduler',
     compliance: { 
       compliant: false, 
@@ -366,7 +366,7 @@ const opexData = [
     gatehouseCheckinDate: '2024-06-01',
   },
   {
-    id: 'pulse-mobile',
+    id: 5,
     name: 'Pulse Mobile',
     compliance: { 
       compliant: true, 
@@ -399,7 +399,7 @@ const opexData = [
     gatehouseCheckinDate: '2024-06-01',
   },
   {
-    id: 'helix-gateway',
+    id: 6,
     name: 'Helix Gateway',
     compliance: { 
       compliant: false, 
