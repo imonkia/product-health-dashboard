@@ -275,13 +275,7 @@ Enable detailed logging by checking the browser console for API request/response
 
 This code is for demonstration and portfolio purposes only. It does not represent the actual product or any proprietary information from my internship. All data, business logic, and specific implementation details have been modified or removed to protect confidentiality and comply with non-disclosure agreements.
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test both frontend and backend
-5. Submit a pull request
+This project was developed with the assistance of AI tools (Cursor) for code generation.
 
 ## License
 
