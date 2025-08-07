@@ -15,10 +15,10 @@ const applications = [
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Atlas CRM Incidents', linkUrl: 'https://servicenow.com/atlas-crm' },
-      { order: 2, category: 'Database', linkName: 'Atlas CRM Database', linkUrl: 'https://database.com/atlas-crm' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Atlas CRM Dashboard', linkUrl: 'https://splunk.com/atlas-crm' },
-      { order: 4, category: 'Other Dashboards', linkName: 'Atlas CRM Assets', linkUrl: 'https://assets.com/atlas-crm' }
+      { category: 'ServiceNow', linkName: 'Atlas CRM Incidents', linkUrl: 'https://servicenow.com/atlas-crm' },
+      { category: 'Database', linkName: 'Atlas CRM Database', linkUrl: 'https://database.com/atlas-crm' },
+      { category: 'Splunk Dashboard', linkName: 'Atlas CRM Dashboard', linkUrl: 'https://splunk.com/atlas-crm' },
+      { category: 'Other Dashboards', linkName: 'Atlas CRM Assets', linkUrl: 'https://assets.com/atlas-crm' }
     ]
   },
   {
@@ -29,10 +29,10 @@ const applications = [
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Nova Analytics Incidents', linkUrl: 'https://servicenow.com/nova-analytics' },
-      { order: 2, category: 'Database', linkName: 'Nova Analytics Database', linkUrl: 'https://database.com/nova-analytics' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Nova Analytics Dashboard', linkUrl: 'https://splunk.com/nova-analytics' },
-      { order: 4, category: 'Link sorting', linkName: 'Nova Analytics Sorting', linkUrl: 'https://sorting.com/nova-analytics' }
+      { category: 'ServiceNow', linkName: 'Nova Analytics Incidents', linkUrl: 'https://servicenow.com/nova-analytics' },
+      { category: 'Database', linkName: 'Nova Analytics Database', linkUrl: 'https://database.com/nova-analytics' },
+      { category: 'Splunk Dashboard', linkName: 'Nova Analytics Dashboard', linkUrl: 'https://splunk.com/nova-analytics' },
+      { category: 'Link sorting', linkName: 'Nova Analytics Sorting', linkUrl: 'https://sorting.com/nova-analytics' }
     ]
   },
   {
@@ -43,10 +43,10 @@ const applications = [
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Zenith Portal Incidents', linkUrl: 'https://servicenow.com/zenith-portal' },
-      { order: 2, category: 'Database', linkName: 'Zenith Portal Database', linkUrl: 'https://database.com/zenith-portal' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Zenith Portal Dashboard', linkUrl: 'https://splunk.com/zenith-portal' },
-      { order: 4, category: 'Other Dashboards', linkName: 'Zenith Portal Assets', linkUrl: 'https://assets.com/zenith-portal' }
+      { category: 'ServiceNow', linkName: 'Zenith Portal Incidents', linkUrl: 'https://servicenow.com/zenith-portal' },
+      { category: 'Database', linkName: 'Zenith Portal Database', linkUrl: 'https://database.com/zenith-portal' },
+      { category: 'Splunk Dashboard', linkName: 'Zenith Portal Dashboard', linkUrl: 'https://splunk.com/zenith-portal' },
+      { category: 'Other Dashboards', linkName: 'Zenith Portal Assets', linkUrl: 'https://assets.com/zenith-portal' }
     ]
   },
   {
@@ -57,10 +57,10 @@ const applications = [
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Orion Scheduler Incidents', linkUrl: 'https://servicenow.com/orion-scheduler' },
-      { order: 2, category: 'Database', linkName: 'Orion Scheduler Database', linkUrl: 'https://database.com/orion-scheduler' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Orion Scheduler Dashboard', linkUrl: 'https://splunk.com/orion-scheduler' },
-      { order: 4, category: 'Link sorting', linkName: 'Orion Scheduler Sorting', linkUrl: 'https://sorting.com/orion-scheduler' }
+      { category: 'ServiceNow', linkName: 'Orion Scheduler Incidents', linkUrl: 'https://servicenow.com/orion-scheduler' },
+      { category: 'Database', linkName: 'Orion Scheduler Database', linkUrl: 'https://database.com/orion-scheduler' },
+      { category: 'Splunk Dashboard', linkName: 'Orion Scheduler Dashboard', linkUrl: 'https://splunk.com/orion-scheduler' },
+      { category: 'Link sorting', linkName: 'Orion Scheduler Sorting', linkUrl: 'https://sorting.com/orion-scheduler' }
     ]
   },
   {
@@ -71,10 +71,10 @@ const applications = [
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Pulse Mobile Incidents', linkUrl: 'https://servicenow.com/pulse-mobile' },
-      { order: 2, category: 'Database', linkName: 'Pulse Mobile Database', linkUrl: 'https://database.com/pulse-mobile' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Pulse Mobile Dashboard', linkUrl: 'https://splunk.com/pulse-mobile' },
-      { order: 4, category: 'Other Dashboards', linkName: 'Pulse Mobile Assets', linkUrl: 'https://assets.com/pulse-mobile' }
+      { category: 'ServiceNow', linkName: 'Pulse Mobile Incidents', linkUrl: 'https://servicenow.com/pulse-mobile' },
+      { category: 'Database', linkName: 'Pulse Mobile Database', linkUrl: 'https://database.com/pulse-mobile' },
+      { category: 'Splunk Dashboard', linkName: 'Pulse Mobile Dashboard', linkUrl: 'https://splunk.com/pulse-mobile' },
+      { category: 'Other Dashboards', linkName: 'Pulse Mobile Assets', linkUrl: 'https://assets.com/pulse-mobile' }
     ]
   },
   {
@@ -85,10 +85,10 @@ const applications = [
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
     links: [
-      { order: 1, category: 'ServiceNow', linkName: 'Helix Gateway Incidents', linkUrl: 'https://servicenow.com/helix-gateway' },
-      { order: 2, category: 'Database', linkName: 'Helix Gateway Database', linkUrl: 'https://database.com/helix-gateway' },
-      { order: 3, category: 'Splunk Dashboard', linkName: 'Helix Gateway Dashboard', linkUrl: 'https://splunk.com/helix-gateway' },
-      { order: 4, category: 'Link sorting', linkName: 'Helix Gateway Sorting', linkUrl: 'https://sorting.com/helix-gateway' }
+      { category: 'ServiceNow', linkName: 'Helix Gateway Incidents', linkUrl: 'https://servicenow.com/helix-gateway' },
+      { category: 'Database', linkName: 'Helix Gateway Database', linkUrl: 'https://database.com/helix-gateway' },
+      { category: 'Splunk Dashboard', linkName: 'Helix Gateway Dashboard', linkUrl: 'https://splunk.com/helix-gateway' },
+      { category: 'Link sorting', linkName: 'Helix Gateway Sorting', linkUrl: 'https://sorting.com/helix-gateway' }
     ]
   }
 ];

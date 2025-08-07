@@ -173,10 +173,10 @@ const LinksTable = styled.div`
 
 const LinkRow = styled.div`
   display: grid;
-  grid-template-columns: 10px 40px repeat(3, 1fr);
+  grid-template-columns: 18px repeat(3, 1fr);
   gap: 16px;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 12px 0;
 `;
 
 const DeleteButton = styled.button`
@@ -186,8 +186,8 @@ const DeleteButton = styled.button`
   border-radius: 50%;
   font-weight: bold;
   padding: 0;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -266,7 +266,6 @@ const ErrorMessage = styled.div`
 `;
 
 interface Link {
-  order: number;
   category: string;
   linkName: string;
   linkUrl: string;
@@ -353,6 +352,7 @@ const EditApp: React.FC = () => {
     };
 
     fetchAppData();
+
   }, [appId]);
 
   const handleInputChange = (field: string, value: any) => {
@@ -378,7 +378,7 @@ const EditApp: React.FC = () => {
       // Prepare update data
       const updateData = {
         ...formData,
-        links,
+        links: sortLinks(links),
         emailNotifications,
         p0p1cP2hIncidents,
         includeInitialCi,
@@ -414,33 +414,45 @@ const EditApp: React.FC = () => {
     const updatedLinks = [...links];
     updatedLinks[index] = {
       ...updatedLinks[index],
-      [field]: field === 'order' ? parseInt(value) || 0 : value
+      [field]: value
     };
+    
+    // Only update local state - no API call
     setLinks(updatedLinks);
   };
 
   const handleAddLink = () => {
     const newLink: Link = {
-      order: links.length + 1,
       category: '',
       linkName: '',
       linkUrl: ''
     };
+    
+    // Only update local state - no API call
     setLinks([...links, newLink]);
   };
 
   const handleDeleteLink = (index: number) => {
     const updatedLinks = links.filter((_, i) => i !== index);
-    // Reorder remaining links
-    const reorderedLinks = updatedLinks.map((link, i) => ({
-      ...link,
-      order: i + 1
-    }));
-    setLinks(reorderedLinks);
+    
+    // Only update local state - no API call
+    setLinks(updatedLinks);
   };
 
   const handleToasterClose = () => {
     setToasterVisible(false);
+  };
+
+  const sortLinks = (links: Link[]): Link[] => {
+    return [...links].sort((a, b) => {
+      // First sort by category
+      const categoryComparison = a.category.localeCompare(b.category);
+      if (categoryComparison !== 0) {
+        return categoryComparison;
+      }
+      // If categories are the same, sort by link name
+      return a.linkName.localeCompare(b.linkName);
+    });
   };
 
   if (loading) {
@@ -624,9 +636,8 @@ const EditApp: React.FC = () => {
             </AccordionHeader>
             <AccordionContent expanded={linksExpanded}>
               <LinksTable>
-                <div style={{ display: 'grid', gridTemplateColumns: '10px 40px repeat(3, 2fr)', gap: '16px', padding: '12px 0', fontWeight: '600', fontSize: '14px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '18px repeat(3, 1fr)', gap: '16px', padding: '12px 0', fontWeight: '600', fontSize: '14px' }}>
                   <div></div>
-                  <div>Order</div>
                   <div>Category</div>
                   <div>Link Name</div>
                   <div>Link Url</div>
@@ -634,12 +645,6 @@ const EditApp: React.FC = () => {
                 {links.map((link, index) => (
                   <LinkRow key={index}>
                     <DeleteButton onClick={() => handleDeleteLink(index)}>×</DeleteButton>
-                    <Input 
-                      type="number" 
-                      value={link.order} 
-                      onChange={(e) => handleLinkChange(index, 'order', e.target.value)} 
-                      style={{ width: '10px' }} 
-                    />
                     <Input 
                       value={link.category} 
                       onChange={(e) => handleLinkChange(index, 'category', e.target.value)} 
