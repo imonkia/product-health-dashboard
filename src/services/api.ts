@@ -92,6 +92,28 @@ export const apiService = {
     }
   },
 
+  // Delete application by ID
+  deleteApplication: async (id: string | number) => {
+    try {
+      const response = await api.delete(`/api/v1/app/applications/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      throw error;
+    }
+  },
+
+  // Delete opex data for a specific app
+  deleteOpexData: async (appId: string | number) => {
+    try {
+      const response = await api.delete(`/api/v1/app/opex/${appId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting opex data:', error);
+      throw error;
+    }
+  },
+
   // Get host data for a vulnerability
   getVulnerabilityHosts: async (appId: string, qid: string) => {
     const response = await api.get(`/api/v1/app/appdata/${appId}/vulns/${qid}/hosts`);

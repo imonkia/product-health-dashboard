@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../Sidebar/Sidebar.tsx';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiService } from '../../services/api.ts';
 import Toaster from '../Toaster/Toaster.tsx';
 
@@ -275,6 +275,7 @@ const EditApp: React.FC = () => {
   const [searchParams] = useSearchParams();
   const appId = searchParams.get('appId');
   const appName = searchParams.get('appName') || 'App';
+  const navigate = useNavigate();
   
   const [kpisExpanded, setKpisExpanded] = useState(true);
   const [linksExpanded, setLinksExpanded] = useState(false);
@@ -437,6 +438,47 @@ const EditApp: React.FC = () => {
     
     // Only update local state - no API call
     setLinks(updatedLinks);
+  };
+
+  const handleDeleteApp = async () => {
+    if (!appId) {
+      setToasterMessage('No application ID provided for deletion.');
+      setToasterType('error');
+      setToasterVisible(true);
+      return;
+    }
+
+    // Show confirmation dialog
+    const isConfirmed = window.confirm(
+      `Are you sure you want to delete "${formData.name || appName}"? This action cannot be undone.`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      // Delete both application and opex data
+      await Promise.all([
+        apiService.deleteApplication(appId),
+        apiService.deleteOpexData(appId)
+      ]);
+      
+      setToasterMessage('Application deleted successfully!');
+      setToasterType('success');
+      setToasterVisible(true);
+      
+      // Redirect to home page after successful deletion
+      setTimeout(() => {
+        navigate('/');
+      }, 1500); // Give user time to see success message
+      
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      setToasterMessage('Failed to delete application. Please try again.');
+      setToasterType('error');
+      setToasterVisible(true);
+    }
   };
 
   const handleToasterClose = () => {
@@ -668,7 +710,7 @@ const EditApp: React.FC = () => {
             <SaveButton onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Save'}
             </SaveButton>
-            <DeleteAppButton>Delete</DeleteAppButton>
+            <DeleteAppButton onClick={handleDeleteApp}>Delete</DeleteAppButton>
           </ActionButtons>
         </ContentArea>
         <Toaster 

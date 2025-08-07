@@ -67,6 +67,30 @@ router.put('/opex/:appId', async (req, res) => {
   }
 });
 
+// DELETE /api/v1/app/opex/:appId
+router.delete('/opex/:appId', async (req, res) => {
+  try {
+    const { appId } = req.params;
+    const numericAppId = parseInt(appId, 10);
+    
+    if (isNaN(numericAppId)) {
+      return res.status(400).json({ error: 'Invalid application ID' });
+    }
+
+    // Delete the opex data
+    const deletedOpexData = await OpexData.findOneAndDelete({ id: numericAppId });
+
+    if (!deletedOpexData) {
+      return res.status(404).json({ error: 'Opex data not found' });
+    }
+
+    res.json({ message: 'Opex data deleted successfully', deletedOpexData });
+  } catch (error) {
+    console.error('Error in DELETE /opex/:appId endpoint:', error);
+    res.status(500).json({ error: 'Failed to delete opex data' });
+  }
+});
+
 // GET /api/v1/app/appdata/:appId/vulns/:qid/hosts
 // Returns host data for a specific vulnerability
 router.get('/appdata/:appId/vulns/:qid/hosts', (req, res) => {

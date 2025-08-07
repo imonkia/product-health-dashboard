@@ -86,4 +86,28 @@ router.put('/applications/:id', async (req, res) => {
   }
 });
 
+// DELETE /api/v1/app/applications/:id
+router.delete('/applications/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id, 10);
+    
+    if (isNaN(numericId)) {
+      return res.status(400).json({ error: 'Invalid application ID' });
+    }
+
+    // Delete the application
+    const deletedApplication = await Application.findOneAndDelete({ id: numericId });
+
+    if (!deletedApplication) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    res.json({ message: 'Application deleted successfully', deletedApplication });
+  } catch (error) {
+    console.error('Error in DELETE /applications/:id endpoint:', error);
+    res.status(500).json({ error: 'Failed to delete application' });
+  }
+});
+
 module.exports = router; 
