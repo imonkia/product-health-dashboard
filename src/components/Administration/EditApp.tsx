@@ -4,6 +4,7 @@ import Sidebar from '../Sidebar/Sidebar.tsx';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiService } from '../../services/api.ts';
 import Toaster from '../Toaster/Toaster.tsx';
+import Modal from '../Modal/Modal.tsx';
 
 const Container = styled.div`
   display: flex;
@@ -307,6 +308,9 @@ const EditApp: React.FC = () => {
   const [toasterMessage, setToasterMessage] = useState('');
   const [toasterType, setToasterType] = useState<'success' | 'error'>('success');
   const [toasterVisible, setToasterVisible] = useState(false);
+  
+  // Modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAppData = async () => {
@@ -440,7 +444,7 @@ const EditApp: React.FC = () => {
     setLinks(updatedLinks);
   };
 
-  const handleDeleteApp = async () => {
+  const handleDeleteApp = () => {
     if (!appId) {
       setToasterMessage('No application ID provided for deletion.');
       setToasterType('error');
@@ -448,25 +452,24 @@ const EditApp: React.FC = () => {
       return;
     }
 
-    // Show confirmation dialog
-    const isConfirmed = window.confirm(
-      `Are you sure you want to delete "${formData.name || appName}"? This action cannot be undone.`
-    );
+    // Open the delete confirmation modal
+    setIsDeleteModalOpen(true);
+  };
 
-    if (!isConfirmed) {
-      return;
-    }
-
+  const confirmDeleteApp = async () => {
     try {
       // Delete both application and opex data
       await Promise.all([
-        apiService.deleteApplication(appId),
-        apiService.deleteOpexData(appId)
+        apiService.deleteApplication(appId!),
+        apiService.deleteOpexData(appId!)
       ]);
       
       setToasterMessage('Application deleted successfully!');
       setToasterType('success');
       setToasterVisible(true);
+      
+      // Close modal
+      setIsDeleteModalOpen(false);
       
       // Redirect to home page after successful deletion
       setTimeout(() => {
@@ -478,6 +481,7 @@ const EditApp: React.FC = () => {
       setToasterMessage('Failed to delete application. Please try again.');
       setToasterType('error');
       setToasterVisible(true);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -720,6 +724,15 @@ const EditApp: React.FC = () => {
           onClose={handleToasterClose} 
         />
       </MainContent>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteApp}
+        title={`Delete Application: ${formData.name || appName}`}
+        message={`Are you sure you want to delete "${formData.name || appName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </Container>
   );
 };
