@@ -6,6 +6,11 @@ const linkSchema = new mongoose.Schema({
   linkUrl: { type: String, required: true }
 });
 
+const complianceSchema = new mongoose.Schema({
+  compliant: { type: Boolean, required: true },
+  complianceSince: { type: String, required: true }
+});
+
 const applicationSchema = new mongoose.Schema({
   id: { type: Number, required: true, unique: true },
   name: { type: String, required: true },
@@ -13,6 +18,7 @@ const applicationSchema = new mongoose.Schema({
   groupName: { type: String, default: '' },
   gatehouseCheckin: { type: Boolean, default: false },
   gatehouseCheckinDate: { type: String, default: '' },
+  compliance: complianceSchema,
   links: [linkSchema],
   // New fields for form updates
   customKeywords: { type: String, default: '' },

@@ -140,8 +140,8 @@ const DashboardTable: React.FC = () => {
                   opexData.issues?.filter((i: any) => i.status === 'Overdue').length || 0
                 ],
                 vulns: [
-                  opexData.vulnerabilities?.filter((v: any) => v.severity === 'High').length || 0,
-                  opexData.vulnerabilities?.filter((v: any) => v.severity === 'Critical').length || 0
+                  opexData.vulnerabilities?.filter((v: any) => v.risk === 'vuln').length || 0,
+                  opexData.vulnerabilities?.filter((v: any) => v.risk === 'critical').length || 0
                 ],
                 patching: [
                   opexData.patching?.filter((p: any) => p.status === 'Pending').length || 0,
@@ -184,8 +184,8 @@ const DashboardTable: React.FC = () => {
     ...row,
     issuesOpen: row.issues[0],
     issuesOverdue: row.issues[1],
-    vulns30: row.vulns[0],
-    vulnsOverdue: row.vulns[1],
+    vulnsRegular: row.vulns[0],
+    vulnsCritical: row.vulns[1],
     patchProd: row.patching[0],
     patchNonProd: row.patching[1],
     downLastMonth: parseFloat(row.downtime[0]),
@@ -240,8 +240,8 @@ const DashboardTable: React.FC = () => {
               </Th>
               <Th>Open</Th>
               <Th>Overdue</Th>
-              <Th>&le; 30 days</Th>
-              <Th>Overdue</Th>
+              <Th>Regular</Th>
+              <Th>Critical</Th>
               <Th>Prod</Th>
               <Th>Non-Prod</Th>
               <Th>Last Month</Th>

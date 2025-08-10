@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Spinner from "../spinner.tsx";
 import MainContent from './MainContent/MainBody.tsx';
 import moment from 'moment';
-import Header from './MainContent/Header/Header.tsx';
+import Header from '../Header/Header.tsx';
 import { apiService, transformOpexData } from '../../services/api.ts';
 
 type AppDowntimeItem = {
@@ -105,6 +105,7 @@ const AppView = () => {
     content = (
       <>
         <Header
+          variant="appView"
           appName={getAppName()}
           appId={appId}
           isCompliant={compliant}

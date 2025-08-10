@@ -14,6 +14,10 @@ const applications = [
     groupName: 'CRM',
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: true, 
+      complianceSince: '2024-05-01' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Atlas CRM Incidents', linkUrl: 'https://servicenow.com/atlas-crm' },
       { category: 'Database', linkName: 'Atlas CRM Database', linkUrl: 'https://database.com/atlas-crm' },
@@ -28,6 +32,10 @@ const applications = [
     groupName: 'Analytics',
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: false, 
+      complianceSince: '2024-05-20' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Nova Analytics Incidents', linkUrl: 'https://servicenow.com/nova-analytics' },
       { category: 'Database', linkName: 'Nova Analytics Database', linkUrl: 'https://database.com/nova-analytics' },
@@ -42,6 +50,10 @@ const applications = [
     groupName: 'Portal',
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: false, 
+      complianceSince: '2024-05-15' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Zenith Portal Incidents', linkUrl: 'https://servicenow.com/zenith-portal' },
       { category: 'Database', linkName: 'Zenith Portal Database', linkUrl: 'https://database.com/zenith-portal' },
@@ -56,6 +68,10 @@ const applications = [
     groupName: 'Scheduler',
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: false, 
+      complianceSince: '2024-05-10' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Orion Scheduler Incidents', linkUrl: 'https://servicenow.com/orion-scheduler' },
       { category: 'Database', linkName: 'Orion Scheduler Database', linkUrl: 'https://database.com/orion-scheduler' },
@@ -70,6 +86,10 @@ const applications = [
     groupName: 'Mobile',
     gatehouseCheckin: true,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: true, 
+      complianceSince: '2024-04-01' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Pulse Mobile Incidents', linkUrl: 'https://servicenow.com/pulse-mobile' },
       { category: 'Database', linkName: 'Pulse Mobile Database', linkUrl: 'https://database.com/pulse-mobile' },
@@ -84,6 +104,10 @@ const applications = [
     groupName: 'Gateway',
     gatehouseCheckin: false,
     gatehouseCheckinDate: '2024-06-01',
+    compliance: { 
+      compliant: false, 
+      complianceSince: '2024-05-05' 
+    },
     links: [
       { category: 'ServiceNow', linkName: 'Helix Gateway Incidents', linkUrl: 'https://servicenow.com/helix-gateway' },
       { category: 'Database', linkName: 'Helix Gateway Database', linkUrl: 'https://database.com/helix-gateway' },
@@ -123,6 +147,14 @@ const opexData = [
         vulnerability: 'OpenSSL CVE-2023-1234',
         category: 'category 1',
         fixByDate: '06/10/2024 10:00',
+        hosts: 2
+      },
+      {
+        risk: 'critical',
+        id: 'VULN-001-CRIT',
+        vulnerability: 'Critical Security Patch CVE-2023-9999',
+        category: 'category 1',
+        fixByDate: '05/01/2024 10:00',
         hosts: 2
       }
     ],
@@ -305,6 +337,14 @@ const opexData = [
         vulnerability: 'Outdated library CVE-2023-9012',
         category: 'category 3',
         fixByDate: '06/20/2024 10:00',
+        hosts: 4
+      },
+      {
+        risk: 'critical',
+        id: 'VULN-003-CRIT',
+        vulnerability: 'Critical Dependency CVE-2023-9998',
+        category: 'category 3',
+        fixByDate: '04/15/2024 10:00',
         hosts: 4
       }
     ],
