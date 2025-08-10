@@ -14,6 +14,51 @@ router.get('/applications', async (req, res) => {
   }
 });
 
+// POST /api/v1/app/applications
+// Creates a new application
+router.post('/applications', async (req, res) => {
+  try {
+    const appData = req.body;
+    
+    // Validate required fields
+    if (!appData.name || !appData.category) {
+      return res.status(400).json({ error: 'Name and category are required' });
+    }
+
+    // Generate a unique ID (you might want to implement a more sophisticated ID generation)
+    const maxIdResult = await Application.findOne({}).sort({ id: -1 });
+    const newId = maxIdResult ? maxIdResult.id + 1 : 1;
+
+    // Create the new application
+    const newApplication = new Application({
+      id: newId,
+      name: appData.name,
+      category: appData.category,
+      groupName: appData.groupName || '',
+      gatehouseCheckin: appData.gatehouseCheckin || false,
+      gatehouseCheckinDate: appData.gatehouseCheckinDate || '',
+      links: appData.links || [],
+      customKeywords: appData.customKeywords || '',
+      emailNotifications: appData.emailNotifications || false,
+      emailNotificationFrequency: appData.emailNotificationFrequency || 'Monthly',
+      p0p1cP2hIncidents: appData.p0p1cP2hIncidents || false,
+      includeInitialCi: appData.includeInitialCi || false,
+      supportHours: appData.supportHours || false,
+      abcWorkgroup: appData.abcWorkgroup || '',
+      compliance: appData.compliance || {
+        compliant: false,
+        complianceSince: new Date().toISOString().split('T')[0]
+      }
+    });
+
+    const savedApplication = await newApplication.save();
+    res.status(201).json(savedApplication);
+  } catch (error) {
+    console.error('Error in POST /applications endpoint:', error);
+    res.status(500).json({ error: 'Failed to create application' });
+  }
+});
+
 // GET /api/v1/app/applications/:id
 // Returns specific application by ID
 router.get('/applications/:id', async (req, res) => {

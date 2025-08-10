@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import DashboardTable from './components/Dashboard/DashboardTable.tsx';
 import AppView from './components/AppView/AppView.tsx';
 import EditApp from './components/Administration/EditApp.tsx';
+import AddApp from './components/Administration/AddApp.tsx';
 import Sidebar from './components/Sidebar/Sidebar.tsx';
-import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const AppContainer = styled.div`
   display: flex;
@@ -28,22 +29,17 @@ const Dashboard = styled.div`
 function AppContent() {
   const location = useLocation();
   const showPieChart = location.pathname === '/';
-  
-  // Determine active section based on current route
-  let activeSection: 'dashboard' | 'admin' = 'dashboard';
-  if (location.pathname === '/admin') {
-    activeSection = 'admin';
-  }
 
   return (
     <AppContainer>
-      <Sidebar showPieChart={showPieChart} activeSection={activeSection} />
+      <Sidebar showPieChart={showPieChart} />
       <Main>
         <Dashboard>
           <Routes>
             <Route path="/" element={<DashboardTable />} />
             <Route path="/apps/:appId" element={<AppView />} />
             <Route path="/admin" element={<EditApp />} />
+            <Route path="/add-app" element={<AddApp />} />
           </Routes>
         </Dashboard>
       </Main>

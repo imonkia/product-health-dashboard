@@ -59,6 +59,17 @@ export const apiService = {
     }
   },
 
+  // Create new application
+  createApplication: async (appData: any) => {
+    try {
+      const response = await api.post('/api/v1/app/applications', appData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating application:', error);
+      throw error;
+    }
+  },
+
   // Update application by ID
   updateApplication: async (id: string | number, updateData: any) => {
     try {
@@ -77,6 +88,17 @@ export const apiService = {
       return response.data;
     } catch (error) {
       console.error('Error fetching opex data:', error);
+      throw error;
+    }
+  },
+
+  // Create operational excellence data for a new app
+  createOpexData: async (opexData: any) => {
+    try {
+      const response = await api.post('/api/v1/app/opex', opexData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating opex data:', error);
       throw error;
     }
   },

@@ -3,6 +3,61 @@ const router = express.Router();
 const moment = require('moment');
 const OpexData = require('../models/OpexData');
 
+// GET /api/v1/app/opex
+// Returns all operational excellence data
+router.get('/opex', async (req, res) => {
+  try {
+    const allOpexData = await OpexData.find({}).sort({ name: 1 });
+    res.json(allOpexData);
+  } catch (error) {
+    console.error('Error in GET /opex endpoint:', error);
+    res.status(500).json({ error: 'Failed to get opex data' });
+  }
+});
+
+// POST /api/v1/app/opex
+// Creates new operational excellence data for an app
+router.post('/opex', async (req, res) => {
+  try {
+    const opexData = req.body;
+    
+    // Validate required fields
+    if (!opexData.id || !opexData.name) {
+      return res.status(400).json({ error: 'ID and name are required' });
+    }
+
+    // Check if opex data already exists for this app
+    const existingOpexData = await OpexData.findOne({ id: opexData.id });
+    if (existingOpexData) {
+      return res.status(409).json({ error: 'Opex data already exists for this application' });
+    }
+
+    // Create the new opex data
+    const newOpexData = new OpexData({
+      id: opexData.id,
+      name: opexData.name,
+      compliance: opexData.compliance || {
+        compliant: false,
+        complianceSince: new Date().toISOString().split('T')[0]
+      },
+      issues: opexData.issues || [],
+      vulnerabilities: opexData.vulnerabilities || [],
+      patching: opexData.patching || [],
+      downtime: opexData.downtime || [],
+      majorIncident: opexData.majorIncident || [],
+      groupName: opexData.groupName || 'Default', // Provide default group name if none provided
+      gatehouseCheckin: opexData.gatehouseCheckin || false,
+      gatehouseCheckinDate: opexData.gatehouseCheckinDate || new Date().toISOString().split('T')[0] // Provide default date if none provided
+    });
+
+    const savedOpexData = await newOpexData.save();
+    res.status(201).json(savedOpexData);
+  } catch (error) {
+    console.error('Error in POST /opex endpoint:', error);
+    res.status(500).json({ error: 'Failed to create opex data' });
+  }
+});
+
 // GET /api/v1/app/opex/:appId
 // Returns operational excellence data for a specific app
 router.get('/opex/:appId', async (req, res) => {

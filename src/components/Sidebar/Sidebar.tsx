@@ -152,7 +152,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             )}
           </PieChartContainer>
           
-          <AddAppButton to="/admin">
+          <AddAppButton to="/add-app">
             Add App
           </AddAppButton>
         </>

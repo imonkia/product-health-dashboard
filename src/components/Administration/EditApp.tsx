@@ -32,9 +32,6 @@ const EditApp: React.FC = () => {
   const appName = searchParams.get('appName') || 'App';
   const navigate = useNavigate();
   
-
-
-  
   // Form state
   const [formData, setFormData] = useState({
     name: '',

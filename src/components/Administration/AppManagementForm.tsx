@@ -28,7 +28,8 @@ interface AppManagementFormProps {
   onAddLink: () => void;
   onDeleteLink: (index: number) => void;
   onSave: () => void;
-  onDeleteApp: () => void;
+  onCancel?: () => void;
+  onDeleteApp?: () => void;
 }
 
 const ContentArea = styled.div`
@@ -231,6 +232,20 @@ const SaveButton = styled.button`
   }
 `;
 
+const CancelButton = styled.button`
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    background: #5a6268;
+  }
+`;
+
 const DeleteAppButton = styled.button`
   background: #e74c3c;
   color: #fff;
@@ -269,6 +284,7 @@ const AppManagementForm: React.FC<AppManagementFormProps> = ({
   onAddLink,
   onDeleteLink,
   onSave,
+  onCancel,
   onDeleteApp
 }) => {
   const [kpisExpanded, setKpisExpanded] = useState(false);
@@ -464,7 +480,12 @@ const AppManagementForm: React.FC<AppManagementFormProps> = ({
         <SaveButton onClick={onSave} disabled={saving}>
           {saving ? 'Saving...' : 'Save'}
         </SaveButton>
-        <DeleteAppButton onClick={onDeleteApp}>Delete</DeleteAppButton>
+        {onCancel && (
+          <CancelButton onClick={onCancel}>Cancel</CancelButton>
+        )}
+        {onDeleteApp && (
+          <DeleteAppButton onClick={onDeleteApp}>Delete</DeleteAppButton>
+        )}
       </ActionButtons>
     </ContentArea>
   );
