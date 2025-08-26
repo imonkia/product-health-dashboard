@@ -4,6 +4,7 @@ This repository contains a mockup of a product health dashboard application I wo
 
 ## Features
 
+- **Authentication**: Secure login using WorkOS AuthKit with SSO/SAML support
 - **Dashboard Overview**: Main table showing all applications with compliance status and key metrics
 - **App-Specific Views**: Detailed views for individual applications with tabbed interfaces
 - **Operational Excellence**: Issues, vulnerabilities, patching, and downtime tracking
@@ -21,6 +22,7 @@ This repository contains a mockup of a product health dashboard application I wo
 - **Recharts** for data visualization
 - **Axios** for API communication
 - **Moment.js** for date/time handling
+- **WorkOS AuthKit** for authentication and SSO
 
 ### Backend
 - **Node.js** with Express
@@ -68,7 +70,14 @@ This repository contains a mockup of a product health dashboard application I wo
    echo "MONGODB_URI=your_mongodb_connection_string" > .env
    echo "PORT=3001" >> .env
    echo "NODE_ENV=development" >> .env
+   
+   # Return to root directory and configure WorkOS authentication
+   cd ..
+   # Create .env file with WorkOS configuration
+   echo "REACT_APP_WORKOS_CLIENT_ID=your_workos_client_id_here" > .env
    ```
+   
+   > **Note**: For WorkOS authentication setup, see [AUTH_SETUP.md](./AUTH_SETUP.md) for detailed instructions.
 
 6. **Seed the database**
    ```bash
@@ -93,6 +102,8 @@ This repository contains a mockup of a product health dashboard application I wo
    npm start
    ```
    The React app will run on `http://localhost:3000`
+
+> **Note**: If you haven't configured WorkOS authentication, you'll see an error message. Please follow the [AUTH_SETUP.md](./AUTH_SETUP.md) guide to complete the authentication setup.
 
 #### Option 2: Run Both with Concurrently (Recommended)
 

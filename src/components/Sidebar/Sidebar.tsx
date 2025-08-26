@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import { apiService } from '../../services/api.ts';
+import UserProfile from '../Auth/UserProfile.tsx';
+import { useAuth } from '@workos-inc/authkit-react';
 
 interface SidebarProps {
   showPieChart?: boolean;
@@ -79,9 +81,26 @@ const AddAppButton = styled(Link)`
   }
 `;
 
+const SignOutLink = styled.button`
+  width: 180px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  margin-top: 150px;
+  bottom: 10px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+`;
+
 const Sidebar: React.FC<SidebarProps> = ({ 
   showPieChart = false, 
 }) => {
+  const { signOut } = useAuth();
   const [complianceData, setComplianceData] = useState([
     { name: 'Compliant', value: 0, color: '#3ec46d' },
     { name: 'Not compliant', value: 0, color: '#e53935' },
@@ -117,10 +136,22 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+
   return (
     <SidebarContainer>
       <Logo to="/">Pulseboard</Logo>
       
+      <div style={{ padding: '0 24px', width: '100%' }}>
+        <UserProfile />
+      </div>
+
       {showPieChart && (
         <>
           <PieChartContainer>
@@ -157,6 +188,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           </AddAppButton>
         </>
       )}
+      
+      <SignOutLink onClick={handleSignOut}>
+        Sign Out
+      </SignOutLink>
     </SidebarContainer>
   );
 };

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/styled-components": "^5.1.34",
+    "@workos-inc/authkit-react": "^0.11.0",
     "axios": "^1.10.0",
     "cra-template-pwa-typescript": "2.0.0",
     "moment": "^2.30.1",

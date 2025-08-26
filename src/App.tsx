@@ -6,6 +6,8 @@ import EditApp from './components/Administration/EditApp.tsx';
 import AddApp from './components/Administration/AddApp.tsx';
 import Sidebar from './components/Sidebar/Sidebar.tsx';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import AuthProvider from './components/Auth/AuthProvider.tsx';
+import ProtectedRoute from './components/Auth/ProtectedRoute.tsx';
 
 const AppContainer = styled.div`
   display: flex;
@@ -49,9 +51,13 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ProtectedRoute>
+          <AppContent />
+        </ProtectedRoute>
+      </Router>
+    </AuthProvider>
   );
 }
 
