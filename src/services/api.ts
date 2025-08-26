@@ -36,12 +36,6 @@ api.interceptors.response.use(
 
 // API endpoints
 export const apiService = {
-  // Get user information
-  getUser: async () => {
-    const response = await api.get('/api/v1/app/user');
-    return response.data;
-  },
-
   // Get all applications
   getApplications: async () => {
     const response = await api.get('/api/v1/app/applications');

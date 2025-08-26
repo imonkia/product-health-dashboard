@@ -19,12 +19,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import route handlers
-const authRoutes = require('./routes/auth');
 const appRoutes = require('./routes/applications');
 const opexRoutes = require('./routes/opex');
 
 // Routes
-app.use('/api/v1/app', authRoutes);
 app.use('/api/v1/app', appRoutes);
 app.use('/api/v1/app', opexRoutes);
 
