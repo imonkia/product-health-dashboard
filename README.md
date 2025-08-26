@@ -134,8 +134,9 @@ The frontend is now connected to the Node.js backend API with MongoDB persistenc
 - `GET /api/v1/app/applications` - List all applications
 - `GET /api/v1/app/applications/:id` - Get specific application with links
 - `GET /api/v1/app/opex/:appId` - Get operational excellence data for an app
-- `GET /api/v1/app/user` - Get user authentication info
 - `GET /health` - Server health check
+
+**Note**: Authentication is handled by WorkOS AuthKit on the frontend, eliminating the need for custom auth endpoints on the backend.
 
 ### Data Flow
 
@@ -195,7 +196,12 @@ product-health-dashboard/
 │   │   ├── AppView/           # Individual app views
 │   │   ├── Dashboard/         # Main dashboard table
 │   │   ├── Administration/    # Edit app forms
-│   │   └── Sidebar/          # Navigation sidebar
+│   │   ├── Auth/              # Authentication components (Login, UserProfile, etc.)
+│   │   ├── Header/            # Application header
+│   │   ├── Modal/             # Modal components
+│   │   ├── Sidebar/           # Navigation sidebar
+│   │   ├── Spinner/           # Loading spinner
+│   │   └── Toaster/           # Toast notifications
 │   ├── services/
 │   │   └── api.ts            # API service layer
 │   └── mockDashboardData.ts  # Legacy mock data (now unused)
@@ -206,7 +212,6 @@ product-health-dashboard/
 │   │   ├── Application.js    # Application data model
 │   │   └── OpexData.js       # Operational excellence data model
 │   ├── routes/
-│   │   ├── auth.js           # Authentication endpoints
 │   │   ├── applications.js   # Application endpoints
 │   │   └── opex.js          # Operational excellence endpoints
 │   ├── scripts/
@@ -218,6 +223,12 @@ product-health-dashboard/
 ```
 
 ## Key Components
+
+### Authentication (WorkOS AuthKit)
+- Secure login using WorkOS AuthKit with SSO/SAML support
+- Protected routes requiring authentication
+- User profile management and logout functionality
+- Integration with WorkOS dashboard for configuration
 
 ### Dashboard Table
 - Displays all applications with compliance status
@@ -263,24 +274,6 @@ The backend uses MongoDB. Update the connection string in `server/.env`:
 ```
 MONGODB_URI=your_mongodb_connection_string
 ```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **MongoDB Connection Failed**: 
-   - Verify MongoDB is running
-   - Check connection string in `.env`
-   - Ensure network connectivity
-
-2. **CORS Errors**: Ensure the backend server is running on port 3001
-3. **API Connection Failed**: Check that the server is running and accessible
-4. **Data Not Loading**: Verify the API endpoints are working correctly
-5. **Database Empty**: Run `npm run seed` to populate initial data
-
-### Debug Mode
-
-Enable detailed logging by checking the browser console for API request/response logs and server console for MongoDB connection status.
 
 ## Disclaimer
 
