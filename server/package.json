@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.22.1",
+    "express": "^4.22.2",
     "cors": "^2.8.5",
     "moment": "^2.29.4",
     "uuid": "^9.0.0",
